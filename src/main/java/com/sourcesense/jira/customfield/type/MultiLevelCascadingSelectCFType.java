@@ -41,11 +41,14 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
 
     public static long EMPTY_VALUE_ID_LONG = -2;
 
+    private final OptionsManager optionsManager;
+
     private final JqlSelectOptionsUtil jqlSelectOptionsUtil;
 
     public MultiLevelCascadingSelectCFType(OptionsManager optionsManager, CustomFieldValuePersister customFieldValuePersister, GenericConfigManager genericConfigManager,
                                            JqlSelectOptionsUtil jqlSelectOptionsUtil, JiraBaseUrls jiraBaseUrls) {
         super(optionsManager, customFieldValuePersister, genericConfigManager, jiraBaseUrls);
+        this.optionsManager = optionsManager;
         this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", jqlSelectOptionsUtil);
     }
 
@@ -116,7 +119,7 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
             return (Option) value;
         }
         if (value instanceof String && EMPTY_VALUE_ID.equals(value)) {
-            return super.optionsManager.createOption(config, EMPTY_VALUE_ID_LONG, EMPTY_VALUE_ID_LONG, EMPTY_VALUE);
+            return optionsManager.createOption(config, EMPTY_VALUE_ID_LONG, EMPTY_VALUE_ID_LONG, EMPTY_VALUE);
         } else if (value instanceof String && !"-1".equals(value)) {
             return (Option) this.getSingularObjectFromString((String) value);
         }
