@@ -36,7 +36,6 @@ import com.atlassian.jira.util.ComponentFactory;
 import com.atlassian.jira.util.ComponentLocator;
 import com.atlassian.jira.web.FieldVisibilityManager;
 import com.atlassian.jira.web.bean.FieldVisibilityBean;
-import com.sourcesense.jira.customfield.searcher.indexer.MultiLevelCascadingSelectIndexer;
 import com.sourcesense.jira.customfield.statistic.MultiLevelCascadingSelectStatisticsMapper;
 import webwork.action.Action;
 
@@ -88,8 +87,7 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
         final CustomFieldInputHelper customFieldInputHelper = componentLocator.getComponentInstanceOfType(CustomFieldInputHelper.class);
         final OperatorUsageValidator usageValidator = componentLocator.getComponentInstanceOfType(OperatorUsageValidator.class);
         final ClauseNames names = field.getClauseNames();
-        final FieldIndexer indexer = new MultiLevelCascadingSelectIndexer(fieldVisibilityManager, field, jqlSelectOptionsUtil, selectConverter);
-        //final FieldIndexer indexer = new ValueLeadMultiLevelCascadingSelectIndexer(fieldVisibilityManager, field, jqlSelectOptionsUtil, selectConverter);
+        final FieldIndexer indexer = new ValueLeadMultiLevelCascadingSelectIndexer(fieldVisibilityManager, field, jqlSelectOptionsUtil, selectConverter);
         final CustomFieldValueProvider customFieldValueProvider = new DefaultCustomFieldValueProvider();
 
         this.searcherInformation = new CustomFieldSearcherInformation(field.getId(), field.getNameKey(), Collections.<FieldIndexer>singletonList(indexer), new AtomicReference<CustomField>(field));
