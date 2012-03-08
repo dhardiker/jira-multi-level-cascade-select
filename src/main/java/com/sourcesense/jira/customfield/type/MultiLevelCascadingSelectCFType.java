@@ -109,10 +109,6 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
 
     /**
      * trasforms the object(Option) in input in an Option.
-     *
-     * @param value
-     * @param object
-     * @return
      */
     private Option trasformToOption(FieldConfig config, Object value) {
         if (value instanceof Option) {
