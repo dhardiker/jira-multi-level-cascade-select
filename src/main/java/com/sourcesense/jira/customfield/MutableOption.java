@@ -62,6 +62,16 @@ public class MutableOption implements Option {
     }
 
     @Override
+    public Boolean getDisabled() {
+        return option.getDisabled();
+    }
+
+    @Override
+    public void setDisabled(Boolean value) {
+        option.setDisabled(value);
+    }
+
+    @Override
     public String toString() {
         return option.toString();
     }
