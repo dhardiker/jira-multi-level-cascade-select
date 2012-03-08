@@ -1,18 +1,19 @@
 package com.sourcesense.jira.common.helpers;
 
+import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
-
 /**
  * This class is the same of the Plug-in 3.0.
  * At the moment seems to not need any change or adaptation.
- * @author Fabio 
- * Date:  5/11/2010 (date of the conversion by Alessandro Benedetti)
+ *
+ * @author Fabio
+ *         Date:  5/11/2010 (date of the conversion by Alessandro Benedetti)
  */
 public abstract class LuceneHelper {
 
@@ -37,7 +38,7 @@ public abstract class LuceneHelper {
             try {
                 field = classLoader.loadClass(FIELD);
                 method = field.getMethod("Keyword", new Class[]{String.class, String.class});
-                addMethod = Document.class.getMethod("add", new Class[] {field});
+                addMethod = Document.class.getMethod("add", new Class[]{field});
             } catch (NoSuchMethodException e) {
                 throw new ClassNotFoundException(e.getMessage());
             }
@@ -46,7 +47,7 @@ public abstract class LuceneHelper {
         @Override
         public void addKeyword(Document doc, String name, String value) {
             try {
-                addMethod.invoke(doc, new Object[] {method.invoke(field, new Object[] {name, value})});
+                addMethod.invoke(doc, new Object[]{method.invoke(field, new Object[]{name, value})});
             } catch (IllegalAccessException e) {
                 log.error(e);
             } catch (InvocationTargetException e) {
@@ -78,7 +79,7 @@ public abstract class LuceneHelper {
             }
 
             try {
-                addMethod = Document.class.getMethod("add", new Class[] {classLoader.loadClass(FIELDABLE)});
+                addMethod = Document.class.getMethod("add", new Class[]{classLoader.loadClass(FIELDABLE)});
             } catch (NoSuchMethodException e) {
                 log.error(e);
                 throw new ClassNotFoundException("Method not found");
@@ -89,7 +90,7 @@ public abstract class LuceneHelper {
         public void addKeyword(Document doc, String name, String value) {
             try {
                 Constructor constructor = field.getConstructor(new Class[]{String.class, String.class, store.getClass(), index.getClass()});
-                addMethod.invoke(doc, new Object[] {constructor.newInstance(new Object[] {name, value, store, index})});
+                addMethod.invoke(doc, new Object[]{constructor.newInstance(new Object[]{name, value, store, index})});
             } catch (NoSuchMethodException e) {
                 log.error(e);
             } catch (IllegalAccessException e) {

@@ -1,16 +1,14 @@
 package com.sourcesense.jira.customfield;
 
-import java.util.List;
-
-import org.ofbiz.core.entity.GenericValue;
-
 import com.atlassian.jira.issue.customfields.option.Option;
 import com.atlassian.jira.issue.fields.config.FieldConfig;
+import org.ofbiz.core.entity.GenericValue;
+
+import java.util.List;
 
 
 /**
  * @author Alessandro Benedetti
- *
  */
 public class MutableOption implements Option {
     private Option option;
@@ -64,8 +62,7 @@ public class MutableOption implements Option {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return option.toString();
     }
 }

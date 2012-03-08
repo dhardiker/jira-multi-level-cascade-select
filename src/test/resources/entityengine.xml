@@ -28,8 +28,8 @@ If you not using the 12 preconfigured DBs, you may also need to add your own fie
         http://www.atlassian.com/software/jira/docs/latest/entityengine.html#transactionfactory
     -->
     <transaction-factory class="org.ofbiz.core.entity.transaction.JNDIFactory">
-      <user-transaction-jndi jndi-server-name="default" jndi-name="java:comp/env/UserTransaction"/>
-      <transaction-manager-jndi jndi-server-name="default" jndi-name="java:comp/env/UserTransaction"/>
+        <user-transaction-jndi jndi-server-name="default" jndi-name="java:comp/env/UserTransaction"/>
+        <transaction-manager-jndi jndi-server-name="default" jndi-name="java:comp/env/UserTransaction"/>
     </transaction-factory>
 
     <delegator name="default" entity-model-reader="main" entity-group-reader="main">
@@ -60,7 +60,8 @@ If you not using the 12 preconfigured DBs, you may also need to add your own fie
 
     <field-type name="oracle10g" loader="maincp" location="entitydefs/fieldtype-oracle10g.xml"/>
     <field-type name="postgres" loader="maincp" location="entitydefs/fieldtype-postgres.xml"/>
-    <field-type name="postgres72" loader="maincp" location="entitydefs/fieldtype-postgres72.xml"/> <!-- use for postgres 7.2 and above -->
+    <field-type name="postgres72" loader="maincp" location="entitydefs/fieldtype-postgres72.xml"/>
+    <!-- use for postgres 7.2 and above -->
     <field-type name="sapdb" loader="maincp" location="entitydefs/fieldtype-sapdb.xml"/>
     <field-type name="sybase" loader="maincp" location="entitydefs/fieldtype-sybase.xml"/>
     <field-type name="db2" loader="maincp" location="entitydefs/fieldtype-db2.xml"/>
@@ -97,18 +98,18 @@ If you not using the 12 preconfigured DBs, you may also need to add your own fie
         PLEASE DO NOT set the use-foreign-key* values to "true" as JIRA does not currently support this.
      -->
     <datasource name="defaultDS" field-type-name="hsql"
-      
-      helper-class="org.ofbiz.core.entity.GenericHelperDAO"
-      check-on-start="true"
-      use-foreign-keys="false"
-      use-foreign-key-indices="false"
-      check-fks-on-start="false"
-      check-fk-indices-on-start="false"
-      add-missing-on-start="true"
-      check-indices-on-start="true">
+
+                helper-class="org.ofbiz.core.entity.GenericHelperDAO"
+                check-on-start="true"
+                use-foreign-keys="false"
+                use-foreign-key-indices="false"
+                check-fks-on-start="false"
+                check-fk-indices-on-start="false"
+                add-missing-on-start="true"
+                check-indices-on-start="true">
         <jndi-jdbc jndi-server-name="default" jndi-name="java:comp/env/jdbc/JiraDS"/>
-<!-- Orion format: <jndi-jdbc jndi-server-name="default" jndi-name="jdbc/JiraDS"/> -->
-<!-- JBoss format: <jndi-jdbc jndi-server-name="default" jndi-name="java:/DefaultDS"/> -->
-<!-- Weblogic format: <jndi-jdbc jndi-server-name="default" jndi-name="JiraDS"/> -->
+        <!-- Orion format: <jndi-jdbc jndi-server-name="default" jndi-name="jdbc/JiraDS"/> -->
+        <!-- JBoss format: <jndi-jdbc jndi-server-name="default" jndi-name="java:/DefaultDS"/> -->
+        <!-- Weblogic format: <jndi-jdbc jndi-server-name="default" jndi-name="JiraDS"/> -->
     </datasource>
 </entity-config>

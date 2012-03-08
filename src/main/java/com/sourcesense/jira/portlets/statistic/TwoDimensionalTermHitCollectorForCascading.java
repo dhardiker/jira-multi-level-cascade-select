@@ -1,16 +1,15 @@
 package com.sourcesense.jira.portlets.statistic;
 
+import com.atlassian.jira.issue.search.parameters.lucene.sort.JiraLuceneFieldCache;
+import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.HitCollector;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.HitCollector;
-
-import com.atlassian.jira.issue.search.parameters.lucene.sort.JiraLuceneFieldCache;
 
 /**
  * User: fabio
@@ -23,23 +22,19 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
     private List docToXTerms;
     private List docToYTerms;
 
-    public TwoDimensionalTermHitCollectorForCascading(TwoDimensionalStatsMapForCascading statsMap, IndexReader indexReader, int xCascadingLevel, int yCascadingLevel)
-    {
+    public TwoDimensionalTermHitCollectorForCascading(TwoDimensionalStatsMapForCascading statsMap, IndexReader indexReader, int xCascadingLevel, int yCascadingLevel) {
         this.statsMap = statsMap;
-        try
-        {
+        try {
             docToXTerms = getMatches(indexReader, statsMap.getxAxisMapper().getDocumentConstant(), xCascadingLevel);
             docToYTerms = getMatches(indexReader, statsMap.getyAxisMapper().getDocumentConstant(), yCascadingLevel);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             //ignore
         }
     }
 
     private boolean checkMatches(Object[] matches) {
-        for(int i=0; i<matches.length; i++) {
-            if (matches[i]!=null) return true;
+        for (int i = 0; i < matches.length; i++) {
+            if (matches[i] != null) return true;
         }
         return false;
     }
@@ -50,21 +45,21 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
         List terms = new ArrayList();
 
         matches = JiraLuceneFieldCache.FIELD_CACHE.getMatches(indexReader, documentConstant);
-        while ((maxLevel==-1 || cascadingIndex<maxLevel) && matches!=null && checkMatches(matches)) {
-            log.debug("Find matches for="+(cascadingIndex>0?documentConstant:documentConstant+":"+cascadingIndex));
+        while ((maxLevel == -1 || cascadingIndex < maxLevel) && matches != null && checkMatches(matches)) {
+            log.debug("Find matches for=" + (cascadingIndex > 0 ? documentConstant : documentConstant + ":" + cascadingIndex));
             terms.add(matches);
 
             cascadingIndex++;
-            matches = JiraLuceneFieldCache.FIELD_CACHE.getMatches(indexReader, documentConstant+":"+cascadingIndex);
+            matches = JiraLuceneFieldCache.FIELD_CACHE.getMatches(indexReader, documentConstant + ":" + cascadingIndex);
         }
         return terms;
     }
 
     private List getCollectionsForIndex(List terms, int i) {
         List termsList = new ArrayList();
-        for(Iterator iterator = terms.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = terms.iterator(); iterator.hasNext(); ) {
             Collection[] termsCollection = (Collection[]) iterator.next();
-            if ((termsCollection == null) || (termsCollection.length<i) || (termsCollection[i]==null))
+            if ((termsCollection == null) || (termsCollection.length < i) || (termsCollection[i] == null))
                 return termsList;
             termsList.add(termsCollection[i]);
         }
@@ -72,7 +67,7 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
     }
 
     @Override
-    public void collect(int i,float v1) {
+    public void collect(int i, float v1) {
         adjustMapForValues(statsMap, getCollectionsForIndex(docToXTerms, i), getCollectionsForIndex(docToYTerms, i));
     }
 
@@ -82,22 +77,22 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
 
         if (xAxis == null && yAxis == null) return null;
 
-        if (xAxis!=null) {
+        if (xAxis != null) {
             xSize = xAxis.size();
             if (index < xSize) return (Collection) xAxis.get(index);
         }
 
-        if (yAxis!=null) {
+        if (yAxis != null) {
             ySize = yAxis.size();
-            if (index < xSize+ySize) return (Collection) yAxis.get(index-xSize);
+            if (index < xSize + ySize) return (Collection) yAxis.get(index - xSize);
         }
 
         return null;
     }
 
     private boolean getIsXAxis(List xAxis, int index) {
-        if (xAxis==null) return false;
-        return (index<xAxis.size());
+        if (xAxis == null) return false;
+        return (index < xAxis.size());
     }
 
     private String appendValue(String value, String toAppend) {
@@ -106,7 +101,7 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
     }
 
     private void addValueToMap(TwoDimensionalStatsMapForCascading statsMap, String xValue, String yValue) {
-        if ((xValue==null) && (yValue==null)) return;
+        if ((xValue == null) && (yValue == null)) return;
 
         statsMap.addValue(xValue, yValue, 1);
         statsMap.addToYTotal(yValue, 1);
@@ -127,7 +122,7 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
         }
         isXAxis = getIsXAxis(xAxis, index);
 
-        for(Iterator iterator = firstAxis.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = firstAxis.iterator(); iterator.hasNext(); ) {
             String iteratorValue = (String) iterator.next();
             if (isXAxis) {
                 xValueDL = appendValue(xValue, iteratorValue);
@@ -135,12 +130,12 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
                 xValueDL = xValue;
                 yValueDL = appendValue(yValue, iteratorValue);
             }
-            addValuesToMap(statsMap, xAxis, yAxis, index+1, xValueDL, yValueDL);
+            addValuesToMap(statsMap, xAxis, yAxis, index + 1, xValueDL, yValueDL);
         }
     }
 
     private void addValuesToMap(TwoDimensionalStatsMapForCascading statsMap, List xAxis, List yAxis) {
-        if ((xAxis==null || xAxis.size()==0) && (yAxis==null || yAxis.size()==0)) {
+        if ((xAxis == null || xAxis.size() == 0) && (yAxis == null || yAxis.size() == 0)) {
             statsMap.addValue(null, null, 1);
             statsMap.addToXTotal(null, 1);
             statsMap.addToYTotal(null, 1);
@@ -149,13 +144,11 @@ public class TwoDimensionalTermHitCollectorForCascading extends HitCollector {
         addValuesToMap(statsMap, xAxis, yAxis, 0, null, null);
     }
 
-    private void adjustMapForValues(TwoDimensionalStatsMapForCascading statsMap, List xAxisValues, List yAxisValues)
-    {
+    private void adjustMapForValues(TwoDimensionalStatsMapForCascading statsMap, List xAxisValues, List yAxisValues) {
         addValuesToMap(statsMap, xAxisValues, yAxisValues);
         // Always log one hit per unique issue.
         statsMap.addToEntireTotal(1);
     }
 
-   
 
 }

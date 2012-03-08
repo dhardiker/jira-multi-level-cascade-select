@@ -1,16 +1,17 @@
-<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" >
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}">
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     </plugin-info>
-    
-<jql-function key="multilevelcascadeOption" name="multilevelcascadeOption" class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadeOptionFunction">
-  <!--The name of the function-->
-  <fname>multilevelcascadeOption</fname>
-  <!--Whether this function returns a list or a single value-->
-  <list>true</list>
-</jql-function>
+
+    <jql-function key="multilevelcascadeOption" name="multilevelcascadeOption"
+                  class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadeOptionFunction">
+        <!--The name of the function-->
+        <fname>multilevelcascadeOption</fname>
+        <!--Whether this function returns a list or a single value-->
+        <list>true</list>
+    </jql-function>
 
 
     <customfield-type key="multi-level-cascading-select" name="Multi level Cascading Select"
@@ -25,7 +26,7 @@
                   location="templates/plugins/customfield/multi-level-cascading-select-xml.vm"/>
     </customfield-type>
 
-<customfield-searcher key="multi-level-cascading-select-searcher" name="Multi level Cascading Select Searcher"
+    <customfield-searcher key="multi-level-cascading-select-searcher" name="Multi level Cascading Select Searcher"
                           class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadingSelectSearcher4">
         <resource type="velocity" name="view"
                   location="templates/plugins/customfield/searcher/multi-level-cascading-select-view.vm"/>
@@ -40,7 +41,8 @@
     <webwork1 key="action-multi-level-cascading-select" name="Multi level cascading select configuration">
         <description>Multi level cascading select configuration.</description>
         <actions>
-            <action name="com.sourcesense.jira.customfield.config.EditCustomFieldMultiLevelOptions" alias="EditCustomFieldMultiLevelOptions"
+            <action name="com.sourcesense.jira.customfield.config.EditCustomFieldMultiLevelOptions"
+                    alias="EditCustomFieldMultiLevelOptions"
                     roles-required="admin">
                 <view name="input">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
                 <view name="error">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
@@ -55,7 +57,8 @@
 
     <portlet key="filterstatsdoublecascading" name="Two Way Cascading Filter Statistics (cascading select)"
              class="com.sourcesense.jira.portlets.TwoDimensionalCascadingStatsPortlet">
-        <description>Display statistics of a specified filter in a table including all cascading select levels.</description>
+        <description>Display statistics of a specified filter in a table including all cascading select levels.
+        </description>
         <resource type="velocity" name="view" location="templates/plugins/portlets/twodimensionalfilterstatsMulti.vm"/>
         <!--  <resource type="i18n" name="i18n" location="com.sourcesense.jira.portlets.twodimensionalfilterstats"/>-->
         <!--com.atlassian.jira.plugins.portlets.twodimensionalfilterstats-->

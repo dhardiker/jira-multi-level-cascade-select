@@ -1,19 +1,11 @@
 package com.sourcesense.jira.portlets.statistic;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.atlassian.jira.issue.comparator.util.DelegatingComparator;
+import com.atlassian.jira.issue.statistics.StatisticsMapper;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.log4j.Logger;
 
-import com.atlassian.jira.issue.comparator.util.DelegatingComparator;
-import com.atlassian.jira.issue.statistics.StatisticsMapper;
+import java.util.*;
 
 /**
  * User: fabio
@@ -57,8 +49,7 @@ public class ThreeDimensionalStatsMap {
      * @param xKey identifies the xValue we are keying on, null is valid.
      * @param i    the amount to increment the total by, usually 1.
      */
-    public void addToXTotal(String xKey, int i)
-    {
+    public void addToXTotal(String xKey, int i) {
         final Object xValue = getXValue(xKey);
 
         if (!xAxisMapper.isValidValue(xValue)) return;
@@ -72,8 +63,7 @@ public class ThreeDimensionalStatsMap {
      * @param yKey identifies the yValue we are keying on, null is valid.
      * @param i    the amount to increment the total by, usually 1.
      */
-    public void addToYTotal(String yKey, int i)
-    {
+    public void addToYTotal(String yKey, int i) {
         final Object yValue = getYValue(yKey);
 
         if (!yAxisMapper.isValidValue(yValue)) return;
@@ -87,8 +77,7 @@ public class ThreeDimensionalStatsMap {
      * @param zKey identifies the yValue we are keying on, null is valid.
      * @param i    the amount to increment the total by, usually 1.
      */
-    public void addToZTotal(String zKey, int i)
-    {
+    public void addToZTotal(String zKey, int i) {
         final Object zValue = getZValue(zKey);
 
         if (!zAxisMapper.isValidValue(zValue)) return;
@@ -111,19 +100,18 @@ public class ThreeDimensionalStatsMap {
      *
      * @param i the amount to increment the total by, usually 1.
      */
-    public void addToEntireTotal(int i)
-    {
+    public void addToEntireTotal(int i) {
         entireTotal += i;
     }
 
-    public void addValue(String xKey, String yKey, String zKey, int i)
-    {
+    public void addValue(String xKey, String yKey, String zKey, int i) {
         final Object xValue = getXValue(xKey);
         final Object yValue = getYValue(yKey);
         final Object zValue = getZValue(zKey);
 
         //only valid values should be added to the fieldMap
-        if (!xAxisMapper.isValidValue(xValue) || !yAxisMapper.isValidValue(yValue) || !zAxisMapper.isValidValue(zValue)) return;
+        if (!xAxisMapper.isValidValue(xValue) || !yAxisMapper.isValidValue(yValue) || !zAxisMapper.isValidValue(zValue))
+            return;
 
         Map<Object, Object> yValues = getTreeMapValues(xAxis, yAxisMapper, xValue);
         Map<Object, Object> zValues = getTreeMapValues(yValues, zAxisMapper, yValue);
@@ -142,53 +130,44 @@ public class ThreeDimensionalStatsMap {
 
     private Map<Object, Object> getTreeMapValues(Map<Object, Object> map, StatisticsMapper<Object> axisMapper, Object value) {
         Map<Object, Object> treeMapValues = (Map<Object, Object>) map.get(value);
-        if (treeMapValues == null)
-        {
+        if (treeMapValues == null) {
             treeMapValues = new TreeMap<Object, Object>(axisMapper.getComparator());
             map.put(value, treeMapValues);
         }
         return treeMapValues;
     }
 
-    public Collection<Object> getXAxis()
-    {
+    public Collection<Object> getXAxis() {
         return xAxis.keySet();
     }
 
-    public Collection getYAxis()
-    {
+    public Collection getYAxis() {
         return getYAxis(NATURAL_ORDER, ASC);
     }
 
-    public Collection getYAxis(String orderBy, String direction)
-    {
+    public Collection getYAxis(String orderBy, String direction) {
         Comparator<Object> comp;
 
-        if (orderBy != null && orderBy.equals(TOTAL_ORDER))
-        {
+        if (orderBy != null && orderBy.equals(TOTAL_ORDER)) {
             // Compare by total
-            comp = new Comparator(){
-                    public int compare(Object o1, Object o2) {
-                        Long o1Long = new Long(getYAxisUniqueTotal(o1));
-                        Long o2Long = new Long(getYAxisUniqueTotal(o2));
-                        return o1Long.compareTo(o2Long);
-                    }
-                };
+            comp = new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    Long o1Long = new Long(getYAxisUniqueTotal(o1));
+                    Long o2Long = new Long(getYAxisUniqueTotal(o2));
+                    return o1Long.compareTo(o2Long);
+                }
+            };
 
             // Only reverse total Comaparator, not field Comparator
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
 
             // If totals are equal, delagate back to field comparator
             comp = new DelegatingComparator(comp, yAxisMapper.getComparator());
-        }
-        else
-        {
+        } else {
             comp = yAxisMapper.getComparator();
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
         }
@@ -196,65 +175,54 @@ public class ThreeDimensionalStatsMap {
         return getYAxis(comp);
     }
 
-    public Collection getYAxis(Comparator<Object> comp)
-    {
+    public Collection getYAxis(Comparator<Object> comp) {
         Set yAxisKeys = new TreeSet(comp);
 
-        for (Iterator<Object> iterator = xAxis.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator<Object> iterator = xAxis.values().iterator(); iterator.hasNext(); ) {
             Map yAxisValues = (Map) iterator.next();
             yAxisKeys.addAll(yAxisValues.keySet());
         }
         return yAxisKeys;
     }
 
-    public Collection getZAxis()
-    {
+    public Collection getZAxis() {
         Comparator<Object> comp = getZAxisComparator(NATURAL_ORDER, ASC);
         return getZAxis(comp);
     }
 
-    public Collection getZAxis(String orderBy, String direction)
-    {
+    public Collection getZAxis(String orderBy, String direction) {
         Comparator<Object> comp = getZAxisComparator(orderBy, direction);
         return getZAxis(comp);
     }
 
-    public Collection getZAxis(Object yValue, String orderBy, String direction)
-    {
+    public Collection getZAxis(Object yValue, String orderBy, String direction) {
         Comparator<Object> comp = getZAxisComparator(orderBy, direction);
         return getZAxis(yValue, comp);
     }
 
-    public Comparator<Object> getZAxisComparator(String orderBy, String direction)
-    {
+    public Comparator<Object> getZAxisComparator(String orderBy, String direction) {
         Comparator<Object> comp;
 
-        if (orderBy != null && orderBy.equals(TOTAL_ORDER))
-        {
+        if (orderBy != null && orderBy.equals(TOTAL_ORDER)) {
             // Compare by total
-            comp = new Comparator(){
-                    public int compare(Object o1, Object o2) {
-                        Long o1Long = new Long(getZAxisUniqueTotal(o1));
-                        Long o2Long = new Long(getZAxisUniqueTotal(o2));
-                        return o1Long.compareTo(o2Long);
-                    }
-                };
+            comp = new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    Long o1Long = new Long(getZAxisUniqueTotal(o1));
+                    Long o2Long = new Long(getZAxisUniqueTotal(o2));
+                    return o1Long.compareTo(o2Long);
+                }
+            };
 
             // Only reverse total Comaparator, not field Comparator
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
 
             // If totals are equal, delagate back to field comparator
             comp = new DelegatingComparator(comp, zAxisMapper.getComparator());
-        }
-        else
-        {
+        } else {
             comp = zAxisMapper.getComparator();
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
         }
@@ -262,18 +230,16 @@ public class ThreeDimensionalStatsMap {
         return comp;
     }
 
-    public Collection getZAxis(Object yValue, Comparator<Object> comp)
-    {
+    public Collection getZAxis(Object yValue, Comparator<Object> comp) {
         Set zAxisKeys = new TreeSet(comp);
 
-        log.debug("getZAxis. Comp = "+comp);
-        for (Iterator<Object> xIterator = xAxis.values().iterator(); xIterator.hasNext();)
-        {
+        log.debug("getZAxis. Comp = " + comp);
+        for (Iterator<Object> xIterator = xAxis.values().iterator(); xIterator.hasNext(); ) {
             Map yAxisValues = (Map) xIterator.next();
-            log.debug("getZAxis. yAxisValues = "+yAxisValues);
+            log.debug("getZAxis. yAxisValues = " + yAxisValues);
             Map zAxisValues = (Map) yAxisValues.get(yValue);
-            log.debug("getZAxis. zAxisValues = "+zAxisValues);
-            if (zAxisValues!=null) {
+            log.debug("getZAxis. zAxisValues = " + zAxisValues);
+            if (zAxisValues != null) {
                 zAxisKeys.addAll(zAxisValues.keySet());
             }
 /*
@@ -288,27 +254,23 @@ public class ThreeDimensionalStatsMap {
         return zAxisKeys;
     }
 
-    public Collection getZAxis(Comparator<Object> comp)
-    {
+    public Collection getZAxis(Comparator<Object> comp) {
         Set zAxisKeys = new TreeSet(comp);
 
-        log.debug("getZAxis. Comp = "+comp);
-        for (Iterator<Object> xIterator = xAxis.values().iterator(); xIterator.hasNext();)
-        {
+        log.debug("getZAxis. Comp = " + comp);
+        for (Iterator<Object> xIterator = xAxis.values().iterator(); xIterator.hasNext(); ) {
             Map yAxisValues = (Map) xIterator.next();
-            log.debug("getZAxis. yAxisValues = "+yAxisValues);
-            for (Iterator yIterator = yAxisValues.values().iterator(); yIterator.hasNext();)
-            {
+            log.debug("getZAxis. yAxisValues = " + yAxisValues);
+            for (Iterator yIterator = yAxisValues.values().iterator(); yIterator.hasNext(); ) {
                 Map zAxisValues = (Map) yIterator.next();
-                log.debug("getZAxis. zAxisValues = "+zAxisValues);
+                log.debug("getZAxis. zAxisValues = " + zAxisValues);
                 zAxisKeys.addAll(zAxisValues.keySet());
             }
         }
         return zAxisKeys;
     }
 
-    public int getCoordinate(Object xAxis, Object yAxis, Object zAxis)
-    {
+    public int getCoordinate(Object xAxis, Object yAxis, Object zAxis) {
         Map yValues = (Map) this.xAxis.get(xAxis);
         if (yValues == null) return 0;
 
@@ -319,44 +281,37 @@ public class ThreeDimensionalStatsMap {
         return value == null ? 0 : value.intValue();
     }
 
-    private Object getZValue(String zKey)
-    {
+    private Object getZValue(String zKey) {
         return getValue(zValuesCache, zAxisMapper, zKey);
     }
 
-    private Object getYValue(String yKey)
-    {
+    private Object getYValue(String yKey) {
         return getValue(yValuesCache, yAxisMapper, yKey);
     }
 
-    private Object getXValue(String xKey)
-    {
+    private Object getXValue(String xKey) {
         return getValue(xValuesCache, xAxisMapper, xKey);
     }
 
     private Object getValue(Map<String, Object> valuesCache, StatisticsMapper<Object> axisMapper, String xKey) {
-        if (xKey==null) return null;
+        if (xKey == null) return null;
         Object xValue = valuesCache.get(xKey);
-        if (xValue == null)
-        {
+        if (xValue == null) {
             xValue = axisMapper.getValueFromLuceneField(xKey);
             valuesCache.put(xKey, xValue);
         }
         return xValue;
     }
 
-    public StatisticsMapper<Object> getzAxisMapper()
-    {
+    public StatisticsMapper<Object> getzAxisMapper() {
         return zAxisMapper;
     }
 
-    public StatisticsMapper<Object> getyAxisMapper()
-    {
+    public StatisticsMapper<Object> getyAxisMapper() {
         return yAxisMapper;
     }
 
-    public StatisticsMapper<Object> getxAxisMapper()
-    {
+    public StatisticsMapper<Object> getxAxisMapper() {
         return xAxisMapper;
     }
 
@@ -366,8 +321,7 @@ public class ThreeDimensionalStatsMap {
      * @param xAxis identifies the column who's total is requested, null is valid.
      * @return number of unique issues for the identified column.
      */
-    public long getXAxisUniqueTotal(Object xAxis)
-    {
+    public long getXAxisUniqueTotal(Object xAxis) {
         return getAxisUniqueTotal(xAxisTotals, xAxis);
     }
 
@@ -377,8 +331,7 @@ public class ThreeDimensionalStatsMap {
      * @param yAxis identifies the row who's total is requested, null is valid.
      * @return number of unique issues for the identified row.
      */
-    public long getYAxisUniqueTotal(Object yAxis)
-    {
+    public long getYAxisUniqueTotal(Object yAxis) {
         return getAxisUniqueTotal(yAxisTotals, yAxis);
     }
 
@@ -388,8 +341,7 @@ public class ThreeDimensionalStatsMap {
      * @param zAxis identifies the row who's total is requested, null is valid.
      * @return number of unique issues for the identified row.
      */
-    public long getZAxisUniqueTotal(Object zAxis)
-    {
+    public long getZAxisUniqueTotal(Object zAxis) {
         return getAxisUniqueTotal(zAxisTotals, zAxis);
     }
 
@@ -399,8 +351,7 @@ public class ThreeDimensionalStatsMap {
      * @param axis identifies the row who's total is requested, null is valid.
      * @return number of unique issues for the identified row.
      */
-    public long getAxisUniqueTotal(Map<Object, Integer> axisTotals, Object axis)
-    {
+    public long getAxisUniqueTotal(Map<Object, Integer> axisTotals, Object axis) {
         long total = 0;
         Integer mapTotal = axisTotals.get(axis);
         if (mapTotal != null) {
@@ -414,8 +365,7 @@ public class ThreeDimensionalStatsMap {
      *
      * @return number of unique issues identified within this StatsMap.
      */
-    public long getUniqueTotal()
-    {
+    public long getUniqueTotal() {
         return entireTotal;
     }
 
@@ -426,15 +376,13 @@ public class ThreeDimensionalStatsMap {
      * @param xAxis identifies the column who's total is requested, null is valid.
      * @return the additive total of the identified column.
      */
-    public long getXAxisTotal(Object xAxis)
-    {
+    public long getXAxisTotal(Object xAxis) {
         long total = 0;
         Map yValues = (Map) this.xAxis.get(xAxis);
         if (yValues == null)
             return 0;
 
-        for (Iterator iterator = yValues.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = yValues.values().iterator(); iterator.hasNext(); ) {
             Integer value = (Integer) iterator.next();
             if (value == null)
                 continue;
@@ -451,11 +399,9 @@ public class ThreeDimensionalStatsMap {
      * @param yAxis identifies the row who's total is requested, null is valid.
      * @return the additive total of the identified row.
      */
-    public long getYAxisTotal(Object yAxis)
-    {
+    public long getYAxisTotal(Object yAxis) {
         long total = 0;
-        for (Iterator<Object> iterator = xAxis.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator<Object> iterator = xAxis.values().iterator(); iterator.hasNext(); ) {
             Map yValues = (Map) iterator.next();
             Integer value = (Integer) yValues.get(yAxis);
             if (value == null)
@@ -471,11 +417,9 @@ public class ThreeDimensionalStatsMap {
      *
      * @return additive total of all issue totals in each cell in this StatsMap.
      */
-    public long getTotal()
-    {
+    public long getTotal() {
         long total = 0;
-        for (Iterator<Object> iterator = xAxis.keySet().iterator(); iterator.hasNext();)
-        {
+        for (Iterator<Object> iterator = xAxis.keySet().iterator(); iterator.hasNext(); ) {
             Object xKey = iterator.next();
             total += getXAxisTotal(xKey);
         }

@@ -202,7 +202,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-<!--
+    <!--
     NOTE: This filter was intended to handle once-common windows-specific characters (like curly quotes)
           but it has been found to interfere with gadget authentication between JIRA and Confluence.
           You can re-enable it by uncommenting it here. See JRA-19856
@@ -626,7 +626,7 @@
         <servlet-name>attachmentzip</servlet-name>
         <servlet-class>com.atlassian.jira.web.servlet.AttachmentZipServlet</servlet-class>
     </servlet>
-    
+
 
     <!-- JCAPTCHA -->
     <servlet>
@@ -646,7 +646,7 @@
         <servlet-name>attachmentzip</servlet-name>
         <url-pattern>/secure/attachmentzip/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>file-server</servlet-name>
         <url-pattern>/download/*</url-pattern>

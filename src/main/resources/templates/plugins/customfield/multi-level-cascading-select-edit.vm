@@ -1,9 +1,12 @@
 #if (!$request || !$request.getAttribute("multilevelcascade"))
-$!request.setAttribute("multilevelcascade" , "true")
+    $!request.setAttribute("multilevelcascade" , "true")
 ## @TODO Somewhat of a hack should move when fields is refactored.
-    <script language="JavaScript" type="text/javascript" src="$!{request.contextPath}/includes/js/cascadingUtil.js"></script>
-    <script language="JavaScript" type="text/javascript" src="$!{request.contextPath}/includes/js/multilevelcascadingUtil.js"></script>
-    <script language="JavaScript" type="text/javascript" src="$!{request.contextPath}/includes/js/jquery-1.3.2.min.js"></script>
+<script language="JavaScript" type="text/javascript"
+        src="$!{request.contextPath}/includes/js/cascadingUtil.js"></script>
+<script language="JavaScript" type="text/javascript"
+        src="$!{request.contextPath}/includes/js/multilevelcascadingUtil.js"></script>
+<script language="JavaScript" type="text/javascript"
+        src="$!{request.contextPath}/includes/js/jquery-1.3.2.min.js"></script>
 #end
 
 #controlHeader ($action $customField.id $customField.name $fieldLayoutItem.required $displayParameters.noHeader)
@@ -21,7 +24,7 @@ $!request.setAttribute("multilevelcascade" , "true")
 #macro(renderSelect $key $customfieldid $levels)
     #if ($levels.get($key))
         #set ($parentMap = $levels.get($key))
-        <select name="$customfieldid:$key" id="$customfieldid:$key">
+    <select name="$customfieldid:$key" id="$customfieldid:$key">
         #if (!$fieldLayoutItem.required)
             #foreach ($parentid in $parentMap.keySet())
                 <option class="$parentid" value="-1">$i18n.getText("common.words.pleaseselect")</option>
@@ -35,23 +38,23 @@ $!request.setAttribute("multilevelcascade" , "true")
                 #end
             #end
         #end
-        </select>
+    </select>
     #end
 #end
 
 #set ($customList = $mlcscftype.getOptionMapFromOptions($configs.options))
 
 #if ($customList.get(null))
-    <select name="${customField.id}" id="${customField.id}">
-        #if (!$fieldLayoutItem.required)
-            <option value="-1">$i18n.getText("common.words.pleaseselect")</option>
-            <option value="-1">$i18n.getText("common.filters.any")</option>
-        #end
-        #set ($rootMap = $customList.get(null))
-        #foreach ($option in $rootMap.get(null))
-            <option value="$option.optionId">$option.value</option>
-        #end
-    </select>
+<select name="${customField.id}" id="${customField.id}">
+    #if (!$fieldLayoutItem.required)
+        <option value="-1">$i18n.getText("common.words.pleaseselect")</option>
+        <option value="-1">$i18n.getText("common.filters.any")</option>
+    #end
+    #set ($rootMap = $customList.get(null))
+    #foreach ($option in $rootMap.get(null))
+        <option value="$option.optionId">$option.value</option>
+    #end
+</select>
 
     #foreach($id in [1..10])
         #set($key = $id.toString())
@@ -69,18 +72,18 @@ $!request.setAttribute("multilevelcascade" , "true")
 
 <script>
     dynamicMultiLevelSelect('${customField.id}', '${customField.id}\\:1');
-    $!script
-#if ($value.getValuesForKey(null) && !$value.getValuesForKey(null).empty)
-    #set ($selectedParent = $value.getValuesForKey(null).iterator().next())
-    selectOption("select#${customField.id}", $selectedParent);
-    #foreach($id in [1..10])
-        #set($key = $id.toString())
-        #if ($value.getValuesForKey($key) && !$value.getValuesForKey($key).empty)
-            #set ($selectedChild = $value.getValuesForKey($key).iterator().next())
-            selectOption("select#${customField.id}\\:$!key", $selectedChild);
+        $!script
+        #if ($value.getValuesForKey(null) && !$value.getValuesForKey(null).empty)
+            #set ($selectedParent = $value.getValuesForKey(null).iterator().next())
+        selectOption("select#${customField.id}", $selectedParent);
+            #foreach($id in [1..10])
+                #set($key = $id.toString())
+                #if ($value.getValuesForKey($key) && !$value.getValuesForKey($key).empty)
+                    #set ($selectedChild = $value.getValuesForKey($key).iterator().next())
+                selectOption("select#${customField.id}\\:$!key", $selectedChild);
+                #end
+            #end
+        #else
+        clickFirstVisible("select#${customField.id}");
         #end
-    #end
-#else
-    clickFirstVisible("select#${customField.id}");
-#end
 </script>

@@ -1,6 +1,5 @@
 package com.sourcesense.jira;
 
-public class MyPlugin
-{
-  //commit test
+public class MyPlugin {
+    //commit test
 }

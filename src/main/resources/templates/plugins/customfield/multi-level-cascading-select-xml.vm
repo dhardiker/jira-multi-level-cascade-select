@@ -5,7 +5,7 @@
     #foreach ($key in $keys)
         #set ($singlevalue = $value.getFirstValueForKey($key))
         #if ($singlevalue)
-            <customfieldvalue key="$!key">$singlevalue.optionId</customfieldvalue>
+        <customfieldvalue key="$!key">$singlevalue.optionId</customfieldvalue>
         #end
     #end
 #end

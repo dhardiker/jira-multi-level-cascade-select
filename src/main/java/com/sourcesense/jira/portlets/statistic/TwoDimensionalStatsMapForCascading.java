@@ -1,18 +1,10 @@
 package com.sourcesense.jira.portlets.statistic;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.apache.commons.collections.comparators.ReverseComparator;
-
 import com.atlassian.jira.issue.comparator.util.DelegatingComparator;
 import com.atlassian.jira.issue.statistics.StatisticsMapper;
+import org.apache.commons.collections.comparators.ReverseComparator;
+
+import java.util.*;
 
 /**
  * User: fabio
@@ -35,8 +27,7 @@ public class TwoDimensionalStatsMapForCascading {
     private Map yAxisTotals;
     private int entireTotal;
 
-    public TwoDimensionalStatsMapForCascading(StatisticsMapper xAxisMapper, StatisticsMapper yAxisMapper)
-    {
+    public TwoDimensionalStatsMapForCascading(StatisticsMapper xAxisMapper, StatisticsMapper yAxisMapper) {
         this.xAxisMapper = xAxisMapper;
         this.yAxisMapper = yAxisMapper;
         xAxis = new TreeMap(xAxisMapper.getComparator());
@@ -51,8 +42,7 @@ public class TwoDimensionalStatsMapForCascading {
      * @param xKey identifies the xValue we are keying on, null is valid.
      * @param i    the amount to increment the total by, usually 1.
      */
-    public void addToXTotal(String xKey, int i)
-    {
+    public void addToXTotal(String xKey, int i) {
         final Object xValue;
         if (xKey != null)
             xValue = getXValue(xKey);
@@ -63,12 +53,9 @@ public class TwoDimensionalStatsMapForCascading {
             return;
 
         Integer total = (Integer) xAxisTotals.get(xValue);
-        if (total == null)
-        {
+        if (total == null) {
             total = new Integer(i);
-        }
-        else
-        {
+        } else {
             total = new Integer(i + total.intValue());
         }
         xAxisTotals.put(xValue, total);
@@ -80,8 +67,7 @@ public class TwoDimensionalStatsMapForCascading {
      * @param yKey identifies the yValue we are keying on, null is valid.
      * @param i    the amount to increment the total by, usually 1.
      */
-    public void addToYTotal(String yKey, int i)
-    {
+    public void addToYTotal(String yKey, int i) {
         final Object yValue;
         if (yKey != null)
             yValue = getYValue(yKey);
@@ -92,12 +78,9 @@ public class TwoDimensionalStatsMapForCascading {
             return;
 
         Integer total = (Integer) yAxisTotals.get(yValue);
-        if (total == null)
-        {
+        if (total == null) {
             total = new Integer(i);
-        }
-        else
-        {
+        } else {
             total = new Integer(i + total.intValue());
         }
         yAxisTotals.put(yValue, total);
@@ -108,13 +91,11 @@ public class TwoDimensionalStatsMapForCascading {
      *
      * @param i the amount to increment the total by, usually 1.
      */
-    public void addToEntireTotal(int i)
-    {
+    public void addToEntireTotal(int i) {
         entireTotal += i;
     }
 
-    public void addValue(String xKey, String yKey, int i)
-    {
+    public void addValue(String xKey, String yKey, int i) {
         final Object xValue;
         if (xKey != null)
             xValue = getXValue(xKey);
@@ -132,8 +113,7 @@ public class TwoDimensionalStatsMapForCascading {
             return;
 
         Map yValues = (Map) xAxis.get(xValue);
-        if (yValues == null)
-        {
+        if (yValues == null) {
             yValues = new TreeMap(yAxisMapper.getComparator());
             xAxis.put(xValue, yValues);
         }
@@ -148,23 +128,20 @@ public class TwoDimensionalStatsMapForCascading {
         yValues.put(yValue, newValue);
     }
 
-    public Collection getXAxis()
-    {
+    public Collection getXAxis() {
         return xAxis.keySet();
     }
 
-    public Collection getYAxis()
-    {
+    public Collection getYAxis() {
         return getYAxis(NATURAL_ORDER, ASC);
     }
-    public Collection getYAxis(String orderBy, String direction)
-    {
+
+    public Collection getYAxis(String orderBy, String direction) {
         Comparator comp;
 
-        if (orderBy != null && orderBy.equals(TOTAL_ORDER))
-        {
+        if (orderBy != null && orderBy.equals(TOTAL_ORDER)) {
             // Compare by total
-            comp = new Comparator(){
+            comp = new Comparator() {
 
                 public int compare(Object o1, Object o2) {
 
@@ -176,19 +153,15 @@ public class TwoDimensionalStatsMapForCascading {
             };
 
             // Only reverse total Comaparator, not field Comparator
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
 
             // If totals are equal, delagate back to field comparator
             comp = new DelegatingComparator(comp, yAxisMapper.getComparator());
-        }
-        else
-        {
+        } else {
             comp = yAxisMapper.getComparator();
-            if (direction != null && direction.equals(DESC))
-            {
+            if (direction != null && direction.equals(DESC)) {
                 comp = new ReverseComparator(comp);
             }
         }
@@ -196,20 +169,17 @@ public class TwoDimensionalStatsMapForCascading {
         return getYAxis(comp);
     }
 
-    public Collection getYAxis(Comparator comp)
-    {
+    public Collection getYAxis(Comparator comp) {
         Set yAxisKeys = new TreeSet(comp);
 
-        for (Iterator iterator = xAxis.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = xAxis.values().iterator(); iterator.hasNext(); ) {
             Map yAxisValues = (Map) iterator.next();
             yAxisKeys.addAll(yAxisValues.keySet());
         }
         return yAxisKeys;
     }
 
-    public int getCoordinate(Object xAxis, Object yAxis)
-    {
+    public int getCoordinate(Object xAxis, Object yAxis) {
         Map yValues = (Map) this.xAxis.get(xAxis);
         if (yValues == null)
             return 0;
@@ -218,35 +188,29 @@ public class TwoDimensionalStatsMapForCascading {
         return value == null ? 0 : value.intValue();
     }
 
-    private Object getYValue(String yKey)
-    {
+    private Object getYValue(String yKey) {
         Object yValue = yValuesCache.get(yKey);
-        if (yValue == null)
-        {
+        if (yValue == null) {
             yValue = yAxisMapper.getValueFromLuceneField(yKey);
             yValuesCache.put(yKey, yValue);
         }
         return yValue;
     }
 
-    private Object getXValue(String xKey)
-    {
+    private Object getXValue(String xKey) {
         Object xValue = xValuesCache.get(xKey);
-        if (xValue == null)
-        {
+        if (xValue == null) {
             xValue = xAxisMapper.getValueFromLuceneField(xKey);
             xValuesCache.put(xKey, xValue);
         }
         return xValue;
     }
 
-    public StatisticsMapper getyAxisMapper()
-    {
+    public StatisticsMapper getyAxisMapper() {
         return yAxisMapper;
     }
 
-    public StatisticsMapper getxAxisMapper()
-    {
+    public StatisticsMapper getxAxisMapper() {
         return xAxisMapper;
     }
 
@@ -256,12 +220,10 @@ public class TwoDimensionalStatsMapForCascading {
      * @param xAxis identifies the column who's total is requested, null is valid.
      * @return number of unique issues for the identified column.
      */
-    public long getXAxisUniqueTotal(Object xAxis)
-    {
+    public long getXAxisUniqueTotal(Object xAxis) {
         long total = 0;
         Integer xTotal = (Integer) xAxisTotals.get(xAxis);
-        if (xTotal != null)
-        {
+        if (xTotal != null) {
             total += xTotal.intValue();
         }
         return total;
@@ -273,12 +235,10 @@ public class TwoDimensionalStatsMapForCascading {
      * @param yAxis identifies the row who's total is requested, null is valid.
      * @return number of unique issues for the identified row.
      */
-    public long getYAxisUniqueTotal(Object yAxis)
-    {
+    public long getYAxisUniqueTotal(Object yAxis) {
         long total = 0;
         Integer yTotal = (Integer) yAxisTotals.get(yAxis);
-        if (yTotal != null)
-        {
+        if (yTotal != null) {
             total += yTotal.intValue();
         }
         return total;
@@ -289,8 +249,7 @@ public class TwoDimensionalStatsMapForCascading {
      *
      * @return number of unique issues identified within this StatsMap.
      */
-    public long getUniqueTotal()
-    {
+    public long getUniqueTotal() {
         return entireTotal;
     }
 
@@ -301,15 +260,13 @@ public class TwoDimensionalStatsMapForCascading {
      * @param xAxis identifies the column who's total is requested, null is valid.
      * @return the additive total of the identified column.
      */
-    public long getXAxisTotal(Object xAxis)
-    {
+    public long getXAxisTotal(Object xAxis) {
         long total = 0;
         Map yValues = (Map) this.xAxis.get(xAxis);
         if (yValues == null)
             return 0;
 
-        for (Iterator iterator = yValues.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = yValues.values().iterator(); iterator.hasNext(); ) {
             Integer value = (Integer) iterator.next();
             if (value == null)
                 continue;
@@ -326,11 +283,9 @@ public class TwoDimensionalStatsMapForCascading {
      * @param yAxis identifies the row who's total is requested, null is valid.
      * @return the additive total of the identified row.
      */
-    public long getYAxisTotal(Object yAxis)
-    {
+    public long getYAxisTotal(Object yAxis) {
         long total = 0;
-        for (Iterator iterator = xAxis.values().iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = xAxis.values().iterator(); iterator.hasNext(); ) {
             Map yValues = (Map) iterator.next();
             Integer value = (Integer) yValues.get(yAxis);
             if (value == null)
@@ -346,11 +301,9 @@ public class TwoDimensionalStatsMapForCascading {
      *
      * @return additive total of all issue totals in each cell in this StatsMap.
      */
-    public long getTotal()
-    {
+    public long getTotal() {
         long total = 0;
-        for (Iterator iterator = xAxis.keySet().iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = xAxis.keySet().iterator(); iterator.hasNext(); ) {
             Object xKey = iterator.next();
             total += getXAxisTotal(xKey);
         }

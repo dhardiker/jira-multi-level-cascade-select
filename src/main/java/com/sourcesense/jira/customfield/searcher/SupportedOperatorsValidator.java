@@ -20,28 +20,23 @@ import java.util.Set;
  *
  * @since v4.0
  */
-class SupportedOperatorsValidator
-{
+class SupportedOperatorsValidator {
     private final Collection<Operator> supportedOperators;
 
-    SupportedOperatorsValidator(Collection<Operator>... supportedOperatorSets)
-    {
+    SupportedOperatorsValidator(Collection<Operator>... supportedOperatorSets) {
         Set<Operator> tmpOperators = EnumSet.noneOf(Operator.class);
-        for (Collection<Operator> supportedOperatorSet : supportedOperatorSets)
-        {
+        for (Collection<Operator> supportedOperatorSet : supportedOperatorSets) {
             tmpOperators.addAll(supportedOperatorSet);
         }
 
         this.supportedOperators = Collections.unmodifiableSet(tmpOperators);
     }
 
-    public MessageSet validate(final User searcher, final TerminalClause terminalClause)
-    {
+    public MessageSet validate(final User searcher, final TerminalClause terminalClause) {
         MessageSet messageSet = new MessageSetImpl();
         // First lets validate that we are not being used with the greater-than/less-than operators, we don't support it
         final Operator operator = terminalClause.getOperator();
-        if (!supportedOperators.contains(operator))
-        {
+        if (!supportedOperators.contains(operator)) {
             I18nHelper i18n = getI18n(searcher);
             messageSet.addErrorMessage(i18n.getText("jira.jql.clause.does.not.support.operator", operator.getDisplayString(), terminalClause.getName()));
         }
@@ -49,8 +44,7 @@ class SupportedOperatorsValidator
         return messageSet;
     }
 
-    I18nHelper getI18n(User user)
-    {
+    I18nHelper getI18n(User user) {
         return new I18nBean(user);
     }
 }

@@ -1,7 +1,7 @@
 package com.sourcesense.jira.common;
 
-import com.atlassian.jira.issue.customfields.option.Options;
 import com.atlassian.jira.issue.customfields.option.Option;
+import com.atlassian.jira.issue.customfields.option.Options;
 
 import java.util.*;
 
@@ -14,7 +14,7 @@ import java.util.*;
  * Time: 1:36:10 PM
  */
 public class OptionsMap implements Map {
- 
+
     private TreeMap map = new TreeMap(new OptionsMapKeyComparator());
 
     public OptionsMap(Options options) {
@@ -26,9 +26,10 @@ public class OptionsMap implements Map {
         transformOptionsToMap(options, 0, null);
     }
 
-    
+
     /**
      * Converts from int to String, returning null for zero.
+     *
      * @param level
      * @return
      */
@@ -38,9 +39,11 @@ public class OptionsMap implements Map {
 
     //se nella map in memoria presente la stringa "level", ritorna una mappa che associa un parent id ad una lista di options
     //
+
     /**
-     * If the Map contains the level in input (string built from the Integer) 
+     * If the Map contains the level in input (string built from the Integer)
      * returns the map parentId -> option list
+     *
      * @param key
      * @return
      */
@@ -51,10 +54,11 @@ public class OptionsMap implements Map {
         return (Map) map.get(key);
     }
 
-    
+
     /**
      * checks that the list of Options in input is not empty and then it populate the result map,
      * descending through the levels
+     *
      * @param options
      * @param level
      * @param parentId
@@ -64,7 +68,7 @@ public class OptionsMap implements Map {
         if (options != null && !options.isEmpty()) {
             Map mapLevel = safeGetMap(getKeyFromLevel(level));
             mapLevel.put(parentId, options);
-            for (Iterator iterator = options.iterator(); iterator.hasNext();) {
+            for (Iterator iterator = options.iterator(); iterator.hasNext(); ) {
                 Option option = (Option) iterator.next();
                 transformOptionsToMap(option.getChildOptions(), level + 1, getOptionKey(option));
             }
@@ -72,9 +76,10 @@ public class OptionsMap implements Map {
         return map;
     }
 
-    
+
     /**
      * returns the String ID of an Option
+     *
      * @param option
      * @return
      */
@@ -84,10 +89,11 @@ public class OptionsMap implements Map {
         }
         return null;
     }
-    
-    
+
+
     /**
      * returns the ID of the parent of the Option
+     *
      * @param option
      * @return
      */
@@ -98,10 +104,11 @@ public class OptionsMap implements Map {
         return null;
     }
 
-   
+
     /**
      * puts an option in an input level, if the level is empty, a new option list is created and populated
      * with the input option
+     *
      * @param level
      * @param option
      */
@@ -134,10 +141,11 @@ public class OptionsMap implements Map {
     //ottengo la mappa a tale livello
     //questo metodo controlla che a un dato livello, sia presente , come figlia di un qualsiasi parentId,
     // una specifica option
-    
+
     /**
      * checks that the input value belong to the input level.
      * In the level it checks that the input value belong at least to one child list
+     *
      * @param level
      * @param value
      * @return
@@ -145,14 +153,14 @@ public class OptionsMap implements Map {
     public boolean containsValueInLevel(Object level, String value) {
         Map levelMap = (Map) map.get(level);
         if (levelMap != null) {
-          //mi prendo tutti i parentId e li scansiono uno per uno
-            for (Iterator parentKeyIterator = levelMap.keySet().iterator(); parentKeyIterator.hasNext();) {
+            //mi prendo tutti i parentId e li scansiono uno per uno
+            for (Iterator parentKeyIterator = levelMap.keySet().iterator(); parentKeyIterator.hasNext(); ) {
                 Object parentKey = parentKeyIterator.next();
                 List options = (List) levelMap.get(parentKey);
                 //mi ottengo la lista di opzioni figlie del parentId
                 if (options != null) {
-                  //per ognuna verifico se soddisfa l'inpu
-                    for (Iterator optionsIterator = options.iterator(); optionsIterator.hasNext();) {
+                    //per ognuna verifico se soddisfa l'inpu
+                    for (Iterator optionsIterator = options.iterator(); optionsIterator.hasNext(); ) {
                         Option option = (Option) optionsIterator.next();
                         if (option.getValue().equalsIgnoreCase(value)) {
                             return true;
@@ -211,21 +219,21 @@ public class OptionsMap implements Map {
 
     /**
      * return all the options inside a level
+     *
      * @param level
      * @return
      */
     public List getOptionsInLevel(String level) {
         Map mapLevel = getLevel(level);
         List options = new ArrayList();
-        for(Iterator mapIterator=mapLevel.keySet().iterator();mapIterator.hasNext();) {
+        for (Iterator mapIterator = mapLevel.keySet().iterator(); mapIterator.hasNext(); ) {
             Object mapKey = mapIterator.next();
             options.addAll((Collection) mapLevel.get(mapKey));
         }
         return options;
     }
 
-   
-    
+
     public static String getFirstLevelKey() {
         return null;
     }
@@ -233,14 +241,15 @@ public class OptionsMap implements Map {
     /**
      * return the next level from the input one.
      * Remember that the level is a String.
+     *
      * @param level
      * @return
      */
     public static String getNextLevelKey(String level) {
-        if (level==null) {
+        if (level == null) {
             return "1";
         }
 
-        return String.valueOf(Integer.parseInt(level)+1);
+        return String.valueOf(Integer.parseInt(level) + 1);
     }
 }

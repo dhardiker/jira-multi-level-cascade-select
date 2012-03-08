@@ -1,16 +1,17 @@
 package com.sourcesense.jira.common.helpers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * This class is the same of the Plug-in 3.0.
  * At the moment seems to not need any change or adaptation.
- * @author Fabio 
- * Date:  5/11/2010 (date of the conversion by Alessandro Benedetti)
+ *
+ * @author Fabio
+ *         Date:  5/11/2010 (date of the conversion by Alessandro Benedetti)
  */
 public abstract class ReaderHelper {
 
@@ -34,7 +35,7 @@ public abstract class ReaderHelper {
     public final IndexReader getReader() {
         try {
             Method method = clazz.getMethod(GET_READER, new Class[]{});
-            return (IndexReader) method.invoke(method.getDeclaringClass(), new Object[] {});
+            return (IndexReader) method.invoke(method.getDeclaringClass(), new Object[]{});
         } catch (NoSuchMethodException e) {
             log.error(e);
         } catch (IllegalAccessException e) {
