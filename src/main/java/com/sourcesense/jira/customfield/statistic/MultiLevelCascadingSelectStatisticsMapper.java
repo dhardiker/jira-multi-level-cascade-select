@@ -1,5 +1,6 @@
 package com.sourcesense.jira.customfield.statistic;
 
+import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.issue.customfields.CustomFieldSearcher;
@@ -14,7 +15,6 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.jql.util.JqlCustomFieldId;
 import com.atlassian.query.operator.Operator;
-import com.opensymphony.user.User;
 import com.sourcesense.jira.customfield.MultiLevelCascadingSelectComparator;
 import com.sourcesense.jira.customfield.MultiLevelCascadingSelectValue;
 import org.apache.log4j.Logger;

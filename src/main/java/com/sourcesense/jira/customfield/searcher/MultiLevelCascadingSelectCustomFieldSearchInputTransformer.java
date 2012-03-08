@@ -1,5 +1,6 @@
 package com.sourcesense.jira.customfield.searcher;
 
+import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.bc.issue.search.QueryContextConverter;
 import com.atlassian.jira.issue.customfields.converters.SelectConverter;
 import com.atlassian.jira.issue.customfields.option.Option;
@@ -27,7 +28,6 @@ import com.atlassian.query.operand.FunctionOperand;
 import com.atlassian.query.operand.Operand;
 import com.atlassian.query.operand.SingleValueOperand;
 import com.atlassian.query.operator.Operator;
-import com.opensymphony.user.User;
 import com.sourcesense.jira.customfield.type.MultiLevelCascadingSelectCFType;
 
 import java.util.*;

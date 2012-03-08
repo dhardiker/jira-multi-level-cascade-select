@@ -1,5 +1,6 @@
 package com.sourcesense.jira.customfield.searcher;
 
+import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.JiraDataType;
 import com.atlassian.jira.JiraDataTypes;
 import com.atlassian.jira.ManagerFactory;
@@ -20,7 +21,6 @@ import com.atlassian.jira.util.MessageSetImpl;
 import com.atlassian.query.clause.TerminalClause;
 import com.atlassian.query.operand.FunctionOperand;
 import com.atlassian.query.operand.Operand;
-import com.opensymphony.user.User;
 
 import java.util.*;
 
@@ -83,7 +83,7 @@ public class MultiLevelCascadeOptionFunction extends AbstractJqlFunction impleme
      * validates the input args and operand
      * (non-Javadoc)
      *
-     * @see com.atlassian.jira.plugin.jql.function.JqlFunction#validate(com.opensymphony.user.User,
+     * @see com.atlassian.jira.plugin.jql.function.JqlFunction#validate(com.atlassian.crowd.embedded.api.User,
      *      com.atlassian.query.operand.FunctionOperand, com.atlassian.query.clause.TerminalClause)
      */
     public MessageSet validate(final User searcher, final FunctionOperand operand, final TerminalClause terminalClause) {

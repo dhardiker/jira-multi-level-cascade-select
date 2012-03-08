@@ -1,6 +1,7 @@
 package com.sourcesense.jira.customfield.searcher;
 
 
+import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.issue.customfields.option.Option;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.jql.operand.JqlOperandResolver;
@@ -9,7 +10,6 @@ import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.jql.validator.ClauseValidator;
 import com.atlassian.jira.util.I18nHelper;
 import com.atlassian.jira.util.NonInjectableComponent;
-import com.opensymphony.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
