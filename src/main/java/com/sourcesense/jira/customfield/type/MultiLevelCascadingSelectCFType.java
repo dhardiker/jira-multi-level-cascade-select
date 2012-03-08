@@ -13,6 +13,7 @@ import com.atlassian.jira.issue.customfields.view.CustomFieldParams;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.fields.config.FieldConfig;
 import com.atlassian.jira.issue.fields.layout.field.FieldLayoutItem;
+import com.atlassian.jira.issue.fields.rest.json.beans.JiraBaseUrls;
 import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.util.EasyList;
 import com.atlassian.jira.util.ErrorCollection;
@@ -43,8 +44,8 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
     private final JqlSelectOptionsUtil jqlSelectOptionsUtil;
 
     public MultiLevelCascadingSelectCFType(OptionsManager optionsManager, CustomFieldValuePersister customFieldValuePersister, GenericConfigManager genericConfigManager,
-                                           JqlSelectOptionsUtil jqlSelectOptionsUtil) {
-        super(optionsManager, customFieldValuePersister, genericConfigManager);
+                                           JqlSelectOptionsUtil jqlSelectOptionsUtil, JiraBaseUrls jiraBaseUrls) {
+        super(optionsManager, customFieldValuePersister, genericConfigManager, jiraBaseUrls);
         this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", jqlSelectOptionsUtil);
     }
 
