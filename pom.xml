@@ -14,15 +14,15 @@
     <distributionManagement>
         <site>
             <id>github</id>
-            <url>gitsite:git@github.com/sourcesense/jira-multi-level-cascade-select.git</url>
+            <url>gitsite:git@github.com/dhardiker/jira-multi-level-cascade-select.git</url>
         </site>
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/sourcesense/jira-multi-level-cascade-select.git</connection>
-        <developerConnection>scm:git:git@github.com:sourcesense/jira-multi-level-cascade-select.git
+        <connection>scm:git:git://github.com/dhardiker/jira-multi-level-cascade-select.git</connection>
+        <developerConnection>scm:git:git@github.com:dhardiker/jira-multi-level-cascade-select.git
         </developerConnection>
-        <url>http://github.com/sourcesense/jira-multi-level-cascade-select</url>
+        <url>http://github.com/dhardiker/jira-multi-level-cascade-select</url>
     </scm>
 
     <properties>
