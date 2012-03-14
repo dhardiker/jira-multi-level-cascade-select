@@ -25,7 +25,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/jonmort/jira-multi-level-cascade-select.git</connection>
-        <developerConnection>scm:git:git@github.com:jonmort/jira-multi-level-cascade-select.git</developerConnection>
+        <developerConnection>scm:git:git://github.com/jonmort/jira-multi-level-cascade-select.git</developerConnection>
         <url>http://github.com/jonmort/jira-multi-level-cascade-select</url>
     </scm>
 
