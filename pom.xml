@@ -26,7 +26,7 @@
 
     <properties>
         <jira.version>5.0</jira.version>
-        <jira.data.version>4.4</jira.data.version>
+        <jira.data.version>5.0</jira.data.version>
         <javac.src.version>1.6</javac.src.version>
         <javac.target.version>1.6</javac.target.version>
         <amps.version>3.8</amps.version>
