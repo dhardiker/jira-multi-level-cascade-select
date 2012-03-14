@@ -11,17 +11,22 @@
     <packaging>jar</packaging>
 
     <distributionManagement>
-        <site>
-            <id>github</id>
-            <url>gitsite:git@github.com/dhardiker/jira-multi-level-cascade-select.git</url>
-        </site>
+        <repository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>https://nexus.adaptavist.com/content/repositories/adaptavist</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>https://nexus.adaptavist.com/content/repositories/adaptavist-snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/dhardiker/jira-multi-level-cascade-select.git</connection>
-        <developerConnection>scm:git:git@github.com:dhardiker/jira-multi-level-cascade-select.git
-        </developerConnection>
-        <url>http://github.com/dhardiker/jira-multi-level-cascade-select</url>
+        <connection>scm:git:git://github.com/jonmort/jira-multi-level-cascade-select.git</connection>
+        <developerConnection>scm:git:git@github.com:jonmort/jira-multi-level-cascade-select.git</developerConnection>
+        <url>http://github.com/jonmort/jira-multi-level-cascade-select</url>
     </scm>
 
     <properties>
