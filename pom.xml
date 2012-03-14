@@ -5,28 +5,33 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sourcesense.jira.plugin</groupId>
     <artifactId>cascadingselect</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
     <name>Multilevel Cascade Select</name>
     <description>Multilevel Cascade Select custom field, searcher and portlet</description>
     <packaging>jar</packaging>
 
     <distributionManagement>
-        <site>
-            <id>github</id>
-            <url>gitsite:git@github.com/dhardiker/jira-multi-level-cascade-select.git</url>
-        </site>
+        <repository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>https://nexus.adaptavist.com/content/repositories/adaptavist</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Internal Releases</name>
+            <url>https://nexus.adaptavist.com/content/repositories/adaptavist-snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/dhardiker/jira-multi-level-cascade-select.git</connection>
-        <developerConnection>scm:git:git@github.com:dhardiker/jira-multi-level-cascade-select.git
-        </developerConnection>
-        <url>http://github.com/dhardiker/jira-multi-level-cascade-select</url>
+        <connection>scm:git:git://github.com/jonmort/jira-multi-level-cascade-select.git</connection>
+        <developerConnection>scm:git:git://github.com/jonmort/jira-multi-level-cascade-select.git</developerConnection>
+        <url>http://github.com/jonmort/jira-multi-level-cascade-select</url>
     </scm>
 
     <properties>
         <jira.version>5.0</jira.version>
-        <jira.data.version>4.4</jira.data.version>
+        <jira.data.version>5.0</jira.data.version>
         <javac.src.version>1.6</javac.src.version>
         <javac.target.version>1.6</javac.target.version>
         <amps.version>3.8</amps.version>
