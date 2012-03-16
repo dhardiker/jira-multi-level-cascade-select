@@ -4,7 +4,9 @@
 
 <html>
 <head>
-    <title><webwork:text name="'admin.issuefields.customfields.edit.options'"/></title>
+    <title><webwork:text name="'admin.issuefields.customfields.edit.options'">
+        <webwork:param name="'value0'"><webwork:property value="/customField/name"/></webwork:param>
+    </webwork:text></title>
 </head>
 <script language="JavaScript">
     <!--
@@ -16,7 +18,9 @@
 </script>
 <body>
 <page:applyDecorator name="jirapanel">
-<page:param name="title"><webwork:text name="'admin.issuefields.customfields.edit.options'"/></page:param>
+<page:param name="title"><webwork:text name="'admin.issuefields.customfields.edit.options'">
+    <webwork:param name="'value0'"><webwork:property value="/customField/name"/></webwork:param>
+</webwork:text></page:param>
 <page:param name="width">100%</page:param>
 <page:param name="instructions">
     <p>
