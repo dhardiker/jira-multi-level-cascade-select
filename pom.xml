@@ -8,7 +8,7 @@
     <version>2.7-SNAPSHOT</version>
     <name>Multilevel Cascade Select</name>
     <description>Multilevel Cascade Select custom field, searcher and portlet</description>
-    <packaging>jar</packaging>
+    <packaging>atlassian-plugin</packaging>
 
     <distributionManagement>
         <repository>

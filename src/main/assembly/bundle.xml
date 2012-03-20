@@ -33,7 +33,7 @@
 
     <files>
         <file>
-            <source>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</source>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
             <outputDirectory>webapp/WEB-INF/lib</outputDirectory>
         </file>
         <file>
@@ -44,7 +44,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>src/main/webapp</directory>
+            <directory>src/test/resources/jira-app</directory>
             <outputDirectory>webapp</outputDirectory>
 
             <excludes>
