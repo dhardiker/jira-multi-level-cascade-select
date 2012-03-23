@@ -1,9 +1,9 @@
 #if ($value)
-    #set ($keys = $value.allKeys)
+    #set ($keys = $value.keySet())
 #end
 #if ($keys)
     #foreach ($key in $keys)
-        #set ($singlevalue = $value.getFirstValueForKey($key))
+        #set ($singlevalue = $value.get($key))
         #if ($singlevalue)
         <customfieldvalue key="$!key">$singlevalue.optionId</customfieldvalue>
         #end

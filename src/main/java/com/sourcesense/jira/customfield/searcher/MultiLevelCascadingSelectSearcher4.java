@@ -2,6 +2,7 @@ package com.sourcesense.jira.customfield.searcher;
 
 import com.atlassian.jira.JiraDataTypes;
 import com.atlassian.jira.bc.issue.search.QueryContextConverter;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.customfields.CustomFieldSearcher;
 import com.atlassian.jira.issue.customfields.CustomFieldValueProvider;
 import com.atlassian.jira.issue.customfields.DefaultCustomFieldValueProvider;
@@ -33,7 +34,6 @@ import com.atlassian.jira.jql.util.JqlCascadingSelectLiteralUtil;
 import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.jql.validator.OperatorUsageValidator;
 import com.atlassian.jira.util.ComponentFactory;
-import com.atlassian.jira.util.ComponentLocator;
 import com.atlassian.jira.web.FieldVisibilityManager;
 import com.atlassian.jira.web.bean.FieldVisibilityBean;
 import com.sourcesense.jira.customfield.statistic.MultiLevelCascadingSelectStatisticsMapper;
@@ -61,14 +61,9 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
 
     private volatile CustomFieldSearcherClauseHandler customFieldSearcherClauseHandler;
 
-    private final ComponentLocator componentLocator;
-
-    private final ComponentFactory componentFactory;
     private OptionsManager optionsManager;
 
-    public MultiLevelCascadingSelectSearcher4(final ComponentLocator componentLocator, final ComponentFactory componentFactory, OptionsManager manager) {
-        this.componentLocator = notNull("componentLocator", componentLocator);
-        this.componentFactory = notNull("componentFactory", componentFactory);
+    public MultiLevelCascadingSelectSearcher4(OptionsManager manager) {
         this.optionsManager = manager;
     }
 
@@ -78,14 +73,14 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
      * @param field the Custom Field for this searcher
      */
     public void init(CustomField field) {
-        final FieldVisibilityManager fieldVisibilityManager = componentLocator.getComponentInstanceOfType(FieldVisibilityBean.class);
-        final SelectConverter selectConverter = componentLocator.getComponentInstanceOfType(SelectConverter.class);
-        final JqlOperandResolver jqlOperandResolver = componentLocator.getComponentInstanceOfType(JqlOperandResolver.class);
-        final JqlSelectOptionsUtil jqlSelectOptionsUtil = componentLocator.getComponentInstanceOfType(JqlSelectOptionsUtil.class);
-        final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil = componentLocator.getComponentInstanceOfType(JqlCascadingSelectLiteralUtil.class);
-        final QueryContextConverter queryContextConverter = componentLocator.getComponentInstanceOfType(QueryContextConverter.class);
-        final CustomFieldInputHelper customFieldInputHelper = componentLocator.getComponentInstanceOfType(CustomFieldInputHelper.class);
-        final OperatorUsageValidator usageValidator = componentLocator.getComponentInstanceOfType(OperatorUsageValidator.class);
+        final FieldVisibilityManager fieldVisibilityManager = ComponentAccessor.getComponentOfType(FieldVisibilityBean.class);
+        final SelectConverter selectConverter = ComponentAccessor.getComponentOfType(SelectConverter.class);
+        final JqlOperandResolver jqlOperandResolver = ComponentAccessor.getComponentOfType(JqlOperandResolver.class);
+        final JqlSelectOptionsUtil jqlSelectOptionsUtil = ComponentAccessor.getComponentOfType(JqlSelectOptionsUtil.class);
+        final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil = ComponentAccessor.getComponentOfType(JqlCascadingSelectLiteralUtil.class);
+        final QueryContextConverter queryContextConverter = ComponentAccessor.getComponentOfType(QueryContextConverter.class);
+        final CustomFieldInputHelper customFieldInputHelper = ComponentAccessor.getComponentOfType(CustomFieldInputHelper.class);
+        final OperatorUsageValidator usageValidator = ComponentAccessor.getComponentOfType(OperatorUsageValidator.class);
         final ClauseNames names = field.getClauseNames();
         final FieldIndexer indexer = new ValueLeadMultiLevelCascadingSelectIndexer(fieldVisibilityManager, field, jqlSelectOptionsUtil, selectConverter);
         final CustomFieldValueProvider customFieldValueProvider = new DefaultCustomFieldValueProvider();
@@ -100,6 +95,7 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
 
         queryFactory = new ValidatingDecoratorQueryFactory(usageValidator, queryFactory);
 
+        final ComponentFactory componentFactory = ComponentAccessor.getComponentOfType(ComponentFactory.class);
         this.customFieldSearcherClauseHandler = new SimpleCustomFieldClauseContextHandler(componentFactory.createObject(MultiLevelCascadingSelectCustomFieldValidator.class, field), queryFactory, componentFactory
                 .createObject(CascadingSelectCustomFieldClauseContextFactory.class, field), OperatorClasses.EQUALITY_OPERATORS_WITH_EMPTY, JiraDataTypes.CASCADING_OPTION);
     }

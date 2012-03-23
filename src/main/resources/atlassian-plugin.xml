@@ -1,4 +1,4 @@
-<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}">
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
@@ -13,6 +13,10 @@
         <list>true</list>
     </jql-function>
 
+    <web-resource name="Resources" key="customfield-resources">
+        <context>atl.general</context>
+        <resource name="multi-level-cascade-select.js" type="download" location="js/multi-level-cascade-select.js"></resource>
+    </web-resource>
 
     <customfield-type key="multi-level-cascading-select" name="Multi level Cascading Select"
                       class="com.sourcesense.jira.customfield.type.MultiLevelCascadingSelectCFType">
