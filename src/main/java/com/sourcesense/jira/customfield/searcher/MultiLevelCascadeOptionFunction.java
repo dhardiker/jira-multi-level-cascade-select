@@ -4,6 +4,7 @@ import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.JiraDataType;
 import com.atlassian.jira.JiraDataTypes;
 import com.atlassian.jira.ManagerFactory;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.customfields.impl.CascadingSelectCFType;
 import com.atlassian.jira.issue.customfields.manager.OptionsManager;
@@ -70,13 +71,13 @@ public class MultiLevelCascadeOptionFunction extends AbstractJqlFunction impleme
 
     private final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil;
 
-    public MultiLevelCascadeOptionFunction(final JqlSelectOptionsUtil jqlSelectOptionsUtil, final SearchHandlerManager searchHandlerManager, final CustomFieldManager customFieldManager,
-                                           final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil) {
-        this.jqlCascadingSelectLiteralUtil = notNull("jqlCascadingSelectLiteralUtil", jqlCascadingSelectLiteralUtil);
+    public MultiLevelCascadeOptionFunction( final SearchHandlerManager searchHandlerManager, final CustomFieldManager customFieldManager,
+                                           final OptionsManager optionsManager) {
+        this.jqlCascadingSelectLiteralUtil = notNull("jqlCascadingSelectLiteralUtil", ComponentAccessor.getComponentOfType(JqlCascadingSelectLiteralUtil.class));
         this.customFieldManager = notNull("customFieldManager", customFieldManager);
         this.searchHandlerManager = notNull("searchHandlerManager", searchHandlerManager);
-        this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", jqlSelectOptionsUtil);
-        this.optionsManager = ManagerFactory.getOptionsManager();
+        this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", ComponentAccessor.getComponentOfType(JqlSelectOptionsUtil.class));
+        this.optionsManager = notNull("optionsManager", optionsManager);
     }
 
     /**

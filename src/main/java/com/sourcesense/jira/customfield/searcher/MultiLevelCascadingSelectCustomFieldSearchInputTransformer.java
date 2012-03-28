@@ -220,7 +220,7 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
         return null;
     }
 
-    /**
+    /*
      * this method came from the simple cascading select, probably doesn't need any change for
      * multilevel
      */

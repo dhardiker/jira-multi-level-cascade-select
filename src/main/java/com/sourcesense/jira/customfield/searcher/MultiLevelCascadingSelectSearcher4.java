@@ -32,6 +32,7 @@ import com.atlassian.jira.jql.query.ClauseQueryFactory;
 import com.atlassian.jira.jql.query.ValidatingDecoratorQueryFactory;
 import com.atlassian.jira.jql.util.JqlCascadingSelectLiteralUtil;
 import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
+import com.atlassian.jira.jql.validator.CascadingSelectCustomFieldValidator;
 import com.atlassian.jira.jql.validator.OperatorUsageValidator;
 import com.atlassian.jira.util.ComponentFactory;
 import com.atlassian.jira.web.FieldVisibilityManager;
@@ -42,8 +43,6 @@ import webwork.action.Action;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static com.atlassian.jira.util.dbc.Assertions.notNull;
 
 /**
  * This class is the main class for Multi Level Cascading Select Custom Field Searcher. It has the
@@ -82,7 +81,7 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
         final CustomFieldInputHelper customFieldInputHelper = ComponentAccessor.getComponentOfType(CustomFieldInputHelper.class);
         final OperatorUsageValidator usageValidator = ComponentAccessor.getComponentOfType(OperatorUsageValidator.class);
         final ClauseNames names = field.getClauseNames();
-        final FieldIndexer indexer = new ValueLeadMultiLevelCascadingSelectIndexer(fieldVisibilityManager, field, jqlSelectOptionsUtil, selectConverter);
+        final FieldIndexer indexer = new ValueLeadMultiLevelCascadingSelectIndexer(fieldVisibilityManager, field);
         final CustomFieldValueProvider customFieldValueProvider = new DefaultCustomFieldValueProvider();
 
         this.searcherInformation = new CustomFieldSearcherInformation(field.getId(), field.getNameKey(), Collections.<FieldIndexer>singletonList(indexer), new AtomicReference<CustomField>(field));
@@ -90,14 +89,16 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
         this.searchInputTransformer = new MultiLevelCascadingSelectCustomFieldSearchInputTransformer(names, field, searcherInformation.getId(), selectConverter, jqlOperandResolver, jqlSelectOptionsUtil,
                 jqlCascadingSelectLiteralUtil, queryContextConverter, customFieldInputHelper);// ?
 
-        ClauseQueryFactory queryFactory = new MultiLevelCascadingSelectingQueryFactory(field, field.getId(), jqlSelectOptionsUtil, jqlOperandResolver, jqlCascadingSelectLiteralUtil);
-        //ClauseQueryFactory queryFactory = new ValueBasedMultiLevelCascadingSelectingQueryFactory(field, field.getId(), jqlSelectOptionsUtil, jqlOperandResolver, jqlCascadingSelectLiteralUtil);
+        ClauseQueryFactory queryFactory = new MultiLevelCascadingSelectingQueryFactory(field, field.getId(), jqlSelectOptionsUtil, jqlOperandResolver, jqlCascadingSelectLiteralUtil, optionsManager);
 
         queryFactory = new ValidatingDecoratorQueryFactory(usageValidator, queryFactory);
 
         final ComponentFactory componentFactory = ComponentAccessor.getComponentOfType(ComponentFactory.class);
-        this.customFieldSearcherClauseHandler = new SimpleCustomFieldClauseContextHandler(componentFactory.createObject(MultiLevelCascadingSelectCustomFieldValidator.class, field), queryFactory, componentFactory
-                .createObject(CascadingSelectCustomFieldClauseContextFactory.class, field), OperatorClasses.EQUALITY_OPERATORS_WITH_EMPTY, JiraDataTypes.CASCADING_OPTION);
+        this.customFieldSearcherClauseHandler = new SimpleCustomFieldClauseContextHandler(
+                componentFactory.createObject(CascadingSelectCustomFieldValidator.class, field),
+                queryFactory,
+                componentFactory.createObject(CascadingSelectCustomFieldClauseContextFactory.class, field),
+                OperatorClasses.EQUALITY_OPERATORS_WITH_EMPTY, JiraDataTypes.CASCADING_OPTION);
     }
 
     public SearcherInformation<CustomField> getSearchInformation() {
@@ -127,16 +128,6 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
         }
         return customFieldSearcherClauseHandler;
     }
-
-
-    public String getEditHtml(SearchContext searchContext, FieldValuesHolder fieldValuesHolder, Map displayParameters, Action action) {
-        return searchRenderer.getEditHtml(/* user? */null, searchContext, fieldValuesHolder, displayParameters, action);
-    }
-
-    public void populateFromParams(FieldValuesHolder fieldValuesHolder, ActionParams arg2) {
-        this.searchInputTransformer.populateFromParams(null/* user? */, fieldValuesHolder, arg2);
-    }
-
 
     public StatisticsMapper getStatisticsMapper(CustomField customField) {
         return new MultiLevelCascadingSelectStatisticsMapper(customField, optionsManager);
