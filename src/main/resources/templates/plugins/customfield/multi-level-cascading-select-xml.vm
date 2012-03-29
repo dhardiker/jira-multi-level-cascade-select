@@ -1,3 +1,4 @@
+#set($keys = "")
 #if ($value)
     #set ($keys = $value.keySet())
 #end

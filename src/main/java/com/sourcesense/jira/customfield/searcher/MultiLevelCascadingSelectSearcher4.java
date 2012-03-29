@@ -18,13 +18,10 @@ import com.atlassian.jira.issue.customfields.statistics.CustomFieldStattable;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.index.indexers.FieldIndexer;
 import com.atlassian.jira.issue.search.ClauseNames;
-import com.atlassian.jira.issue.search.SearchContext;
 import com.atlassian.jira.issue.search.searchers.information.SearcherInformation;
 import com.atlassian.jira.issue.search.searchers.renderer.SearchRenderer;
 import com.atlassian.jira.issue.search.searchers.transformer.SearchInputTransformer;
 import com.atlassian.jira.issue.statistics.StatisticsMapper;
-import com.atlassian.jira.issue.transport.ActionParams;
-import com.atlassian.jira.issue.transport.FieldValuesHolder;
 import com.atlassian.jira.jql.context.CascadingSelectCustomFieldClauseContextFactory;
 import com.atlassian.jira.jql.operand.JqlOperandResolver;
 import com.atlassian.jira.jql.operator.OperatorClasses;
@@ -38,10 +35,8 @@ import com.atlassian.jira.util.ComponentFactory;
 import com.atlassian.jira.web.FieldVisibilityManager;
 import com.atlassian.jira.web.bean.FieldVisibilityBean;
 import com.sourcesense.jira.customfield.statistic.MultiLevelCascadingSelectStatisticsMapper;
-import webwork.action.Action;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -72,7 +67,7 @@ public class MultiLevelCascadingSelectSearcher4 extends AbstractInitializationCu
      * @param field the Custom Field for this searcher
      */
     public void init(CustomField field) {
-        final FieldVisibilityManager fieldVisibilityManager = ComponentAccessor.getComponentOfType(FieldVisibilityBean.class);
+        final FieldVisibilityManager fieldVisibilityManager = ComponentAccessor.getComponentOfType(FieldVisibilityManager.class);
         final SelectConverter selectConverter = ComponentAccessor.getComponentOfType(SelectConverter.class);
         final JqlOperandResolver jqlOperandResolver = ComponentAccessor.getComponentOfType(JqlOperandResolver.class);
         final JqlSelectOptionsUtil jqlSelectOptionsUtil = ComponentAccessor.getComponentOfType(JqlSelectOptionsUtil.class);

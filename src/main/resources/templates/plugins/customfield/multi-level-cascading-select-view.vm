@@ -1,4 +1,4 @@
-#if ($value)
+#if ($value && !$value.isEmpty())
     #set($prefix = " - ")
     $value.get(null)
     #foreach ($id in [1..$value.size()])

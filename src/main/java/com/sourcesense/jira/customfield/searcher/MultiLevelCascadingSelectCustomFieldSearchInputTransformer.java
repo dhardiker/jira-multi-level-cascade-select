@@ -196,21 +196,20 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
             List<Option> options = new ArrayList<Option>();
             for (QueryLiteral l : literals)
                 options.addAll(jqlSelectOptionsUtil.getOptions(customField, l, true));
-            // options.addAll(jqlSelectOptionsUtil.getOptions(customField, queryContext, l, true));
+
             CustomFieldParams customFieldParams = new CustomFieldParamsImpl(customField);
             if (options.size() == 0) {
                 customFieldParams.put(MultiLevelCascadingSelectCFType.PARENT_KEY, Collections.singleton(literal.asString()));
             } else {
-                int counter = options.size() - 1;
                 for (Option opt : options) {
-                    if (counter > 0) {
-                        String key = "" + counter;
-                        customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                    final String key;
+                    if (opt.getParentOption() == null) {
+                        key = null;
                     } else {
-                        String key = null;
-                        customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                        int depth = MultiLevelCascadingSelectCFType.findDepth(opt);
+                        key = Integer.toString(depth);
                     }
-                    counter--;
+                    customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
                 }
             }
             // secondo me sono al contrario????

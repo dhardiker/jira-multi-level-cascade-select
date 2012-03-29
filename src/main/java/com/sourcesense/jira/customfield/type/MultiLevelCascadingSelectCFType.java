@@ -17,11 +17,13 @@ import com.atlassian.jira.issue.fields.config.FieldConfig;
 import com.atlassian.jira.issue.fields.config.FieldConfigItemType;
 import com.atlassian.jira.issue.fields.layout.field.FieldLayoutItem;
 import com.atlassian.jira.issue.fields.rest.json.beans.JiraBaseUrls;
+import com.atlassian.jira.jql.operand.QueryLiteral;
 import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.util.ErrorCollection;
 import com.atlassian.jira.util.JiraUtils;
 import com.atlassian.jira.util.NotNull;
 import com.atlassian.jira.util.ObjectUtils;
+import com.atlassian.query.operand.SingleValueOperand;
 import com.google.common.collect.Lists;
 import com.sourcesense.jira.common.OptionsMap;
 import com.sourcesense.jira.customfield.config.SettableMultiLevelOptionsConfigItem4;
@@ -33,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.atlassian.jira.util.dbc.Assertions.equals;
 import static com.atlassian.jira.util.dbc.Assertions.notNull;
 
 /**
@@ -59,6 +62,15 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
         this.customFieldValuePersister = customFieldValuePersister;
         this.optionsManager = optionsManager;
         this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", ComponentAccessor.getComponentOfType(JqlSelectOptionsUtil.class));
+    }
+
+    public static int findDepth(Option option) {
+        int depth = 0;
+        Option parent = option;
+        while((parent = parent.getParentOption()) != null) {
+            depth ++;
+        }
+        return depth;
     }
 
     private Option getOptionValueForParentId(CustomField field, String sParentOptionId, Issue issue)
@@ -305,11 +317,9 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
         for (int i = 0; i < count; i++) {
             Option option1 = trasformToOption(config, relevantParams.getFirstValueForKey(Integer.toString(i)));
             if (option1 != null && !option1.toString().contains(":") && !option1.toString().equals(EMPTY_VALUE)) {
-                if (option1 != null) {
-                    log.debug("check option: [" + option1 + "]");
-                    if (!checkOption(customFieldId, option1, parentOption, errorCollectionToAddTo, config)) {
-                        return;
-                    }
+                log.debug("check option: [" + option1 + "]");
+                if (!checkOption(customFieldId, option1, parentOption, errorCollectionToAddTo, config)) {
+                    return;
                 }
                 parentOption = option1;
             } else {
@@ -318,24 +328,41 @@ public class MultiLevelCascadingSelectCFType extends CascadingSelectCFType {
                 for (String s : valueStrings) {
                     splittedStrings = s.split(":");
                 }
-                for (int j = 0; j < splittedStrings.length; j++) {
+                if (splittedStrings == null) {
+                    continue;
+                }
+                for (String splittedString : splittedStrings) {
                     // this part probably is useless, but for sure is not useful for "none" options
-                    if (!splittedStrings[j].equals(EMPTY_VALUE_ID)) {
-                        Long longOptionValue = new Long(splittedStrings[j]);
-                        Option option = jqlSelectOptionsUtil.getOptionById(longOptionValue);
-                        if (option != null) {
-                            log.debug("check option: [" + option + "]");
-                            if (!checkOption(customFieldId, option, parentOption, errorCollectionToAddTo, config)) {
+                    if (!splittedString.equals(EMPTY_VALUE_ID)) {
+                        if (StringUtils.isNumeric(splittedString)) {
+                            Long longOptionValue = new Long(splittedString);
+                            final Option option = jqlSelectOptionsUtil.getOptionById(longOptionValue);
+                            if (checkOption(errorCollectionToAddTo, config, parentOption, customFieldId, option))
                                 return;
+                            parentOption = option;
+                        } else {
+                            for (Option option : jqlSelectOptionsUtil.getOptions(config.getCustomField(), new QueryLiteral(new SingleValueOperand(splittedString),splittedString), true)) {
+                                if (checkOption(errorCollectionToAddTo, config, parentOption, customFieldId, option))
+                                    return;
+                                parentOption = option;
                             }
                         }
-                        parentOption = option;
                     }
                 }
 
             }
         }
         log.debug("Post-Validate Error collection: [" + errorCollectionToAddTo.getErrors() + "]");
+    }
+
+    private boolean checkOption(ErrorCollection errorCollectionToAddTo, FieldConfig config, Option parentOption, String customFieldId, Option option) {
+        if (option != null) {
+            log.debug("check option: [" + option + "]");
+            if (!checkOption(customFieldId, option, parentOption, errorCollectionToAddTo, config)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
