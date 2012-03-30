@@ -6,10 +6,16 @@ import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.index.indexers.impl.AbstractCustomFieldIndexer;
 import com.atlassian.jira.util.NonInjectableComponent;
 import com.atlassian.jira.web.FieldVisibilityManager;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Maps;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import static com.atlassian.jira.util.dbc.Assertions.notNull;
 
@@ -28,6 +34,9 @@ import static com.atlassian.jira.util.dbc.Assertions.notNull;
 @NonInjectableComponent
 public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFieldIndexer {
 
+    private final Log log = LogFactory.getLog(ValueLeadMultiLevelCascadingSelectIndexer.class);
+
+    public static final String RAW_VALUE_SUFFIX = "_raw";
 
     // /CLOVER:OFF
 
@@ -58,7 +67,15 @@ public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFie
         if (value instanceof Map) {
             final Map<String,Option> customFieldParams = (Map<String, Option>) value;
             indexAllLevels(customFieldParams, doc, indexType);
+            doc.add(new Field(getDocumentFieldId() + ":" + RAW_VALUE_SUFFIX, stringRep(customFieldParams), Field.Store.YES, indexType));
         }
+
+    }
+
+    private String stringRep(Map<String, Option> customFieldParams) {
+        final TreeMap<String, Option> orderedKeys = new TreeMap<String, Option>(Maps.filterKeys(customFieldParams, Predicates.notNull()));
+        orderedKeys.put("0", customFieldParams.get(null));
+        return Joiner.on("-").join(orderedKeys.values());
     }
 
     /**
@@ -74,7 +91,7 @@ public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFie
             final Option currentOption = customFieldParams.get(level);
             if (currentOption != null) {
                 final String indexFieldName = getDocumentFieldId() + (level == null ? "" : ":" + level);
-                System.out.println("Indexing :" + currentOption + "With ID=" + indexFieldName);
+                log.debug("Indexing :" + currentOption + "With ID=" + indexFieldName);
                 addField(doc, indexFieldName, currentOption.getOptionId().toString(), indexType);
             }
         }
