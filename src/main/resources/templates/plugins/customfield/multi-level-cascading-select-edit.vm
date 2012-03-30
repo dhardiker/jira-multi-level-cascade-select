@@ -7,7 +7,7 @@
         <select name="${customfieldid}" #if ($selectedParent != $parentid)disabled="true" class="hidden"#end data-parent="$!parentid">
             #if (!$fieldLayoutItem.required)
                 <option value="-1">$i18n.getText("common.words.pleaseselect")</option>
-                <option value="-1">$i18n.getText("common.filters.any")</option>
+                <option value="-1" #if ($selectedValue == "-1")selected="true"#end>$i18n.getText("common.filters.any")</option>
             #end
 
             #foreach ($option in $parentMap.get($parentid))
@@ -22,20 +22,20 @@
 
 #if ($customList.get(null))
 <div class="mlcs-container">
-    #renderSelect($customField.id $customList.get(null) "" $value.keysAndValues.get(null).get(0))
+    #renderSelect($customField.id $customList.get(null) "" "$!{value.getFirstValueForNullKey()}")
 
-    #if(!$value.keysAndValues.get(null).isEmpty())
-        #set($selectedParent = $value.keysAndValues.get(null).get(0))
+    #if(!$value.isEmpty() && $value.containsKey(null))
+        #set($selectedParent = "$!{value.getFirstValueForNullKey()}")
     #else
         #set($selectedParent = "")
     #end
     #foreach($id in [1..10])
         #set($key = $id.toString())
         #if ($customList.get($key))
-            #renderSelect("${customField.id}:$key" $customList.get($key) $selectedParent $value.keysAndValues.get($key).get(0))
+            #renderSelect("${customField.id}:$key" $customList.get($key) $selectedParent "$!{value.getFirstValueForKey($key)}")
         #end
-        #if(!$value.keysAndValues.get($key).isEmpty())
-            #set($selectedParent = $value.keysAndValues.get($key).get(0))
+        #if($value.containsKey($key))
+            #set($selectedParent = "$!{value.getFirstValueForKey($key)}")
         #else
             #set($selectedParent = "")
         #end

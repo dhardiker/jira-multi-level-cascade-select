@@ -130,7 +130,7 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
                         levelNumber = Integer.parseInt(level);
                     else
                         levelNumber = 0;
-                    orderedFunctionArgs.put(levelNumber, EMPTY_VALUE_ID);
+                    orderedFunctionArgs.put(levelNumber, EMPTY_VALUE);
                 } else {
                     invalidLongOperand = longOptionValue;
                 }
@@ -210,6 +210,14 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
                         key = Integer.toString(depth);
                     }
                     customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                }
+            }
+            if (clause.getOperand() instanceof FunctionOperand) {
+                FunctionOperand operand = (FunctionOperand) clause.getOperand();
+                for (String arg : operand.getArgs()) {
+                    if (EMPTY_VALUE.equals(arg)) {
+                        customFieldParams.put(Integer.toString(operand.getArgs().indexOf(arg)), Collections.singleton(EMPTY_VALUE_ID));
+                    }
                 }
             }
             // secondo me sono al contrario????

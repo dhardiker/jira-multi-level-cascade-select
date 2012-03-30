@@ -33,7 +33,6 @@ import com.atlassian.jira.jql.validator.CascadingSelectCustomFieldValidator;
 import com.atlassian.jira.jql.validator.OperatorUsageValidator;
 import com.atlassian.jira.util.ComponentFactory;
 import com.atlassian.jira.web.FieldVisibilityManager;
-import com.atlassian.jira.web.bean.FieldVisibilityBean;
 import com.sourcesense.jira.customfield.statistic.MultiLevelCascadingSelectStatisticsMapper;
 
 import java.util.Collections;

@@ -33,7 +33,7 @@
     <customfield-searcher key="multi-level-cascading-select-searcher" name="Multi level Cascading Select Searcher"
                           class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadingSelectSearcher4">
         <resource type="velocity" name="view"
-                  location="templates/plugins/customfield/searcher/multi-level-cascading-select-view.vm"/>
+                  location="templates/plugins/fields/view-searcher/view-searcher-multioption.vm"/>
         <resource type="velocity" name="search"
                   location="templates/plugins/customfield/searcher/multi-level-cascading-select-search.vm"/>
         <resource type="velocity" name="label"
