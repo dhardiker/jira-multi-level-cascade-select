@@ -34,7 +34,7 @@
         <menu ref="reports"/>
 
         <menu name="External Links">
-            <item name="Atlassian JIRA" href="http://lucene.apache.org/solr/"/>
+            <item name="Atlassian JIRA" href="http://www.atlassian.com/jira"/>
             <item name="Project Page" href="https://github.com/sourcesense/jira-multi-level-cascade-select"/>
         </menu>
     </body>

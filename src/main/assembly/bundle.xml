@@ -34,25 +34,11 @@
     <files>
         <file>
             <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
-            <outputDirectory>webapp/WEB-INF/lib</outputDirectory>
         </file>
         <file>
             <source>README</source>
             <filtered>true</filtered>
         </file>
     </files>
-
-    <fileSets>
-        <fileSet>
-            <directory>src/test/resources/jira-app</directory>
-            <outputDirectory>webapp</outputDirectory>
-
-            <excludes>
-                <exclude>**/jetty-env.xml</exclude>
-                <exclude>**/web.xml</exclude>
-            </excludes>
-            <filtered>true</filtered>
-        </fileSet>
-    </fileSets>
 
 </assembly>

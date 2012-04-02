@@ -14,16 +14,18 @@ Welcome to Jira Multi level cascade select plug in !!!
   <Multi Level Cascade Select Plug in> is a Plug In for the <Atlassian Jira> issue Tracker, that models a new custom field.
   The new custom field allows you to have a cascading select with a multi level selection.
 
- 
+Upgrade
+
+  Before installing version 3.0 it is necessary to uninstall previous versions by removing them from <<<${ATLASSIAN_HOME}/WEB_INF/>>>.
+  The file to remove will be called <<<cascadingselect-VERSION.jar>>>.
+  After upgrading it will be necessary to rebuild the JIRA index
 
 Installation
 
-  After the download of the <<<cascadingselect-VERSION-bundle.zip>>> package,
-  please copy all the files under <<<WEB-INF>>> directory to <<<${ATLASSIAN_HOME}/WEB_INF/>>>.
-  Simply extract the plug-in in the Jira Directory and the new Multi Level Cascading Select Custom Field will be added.
-  
+  Take the cascading-select-VERSION.jar file and install it via the Plugin Manager from the admin screen.
+
 Note
 
-  If you are upgrading from versions \< 2.4, you need to rebuild the JIRA index (see {{{http://confluence.atlassian.com/display/JIRA/Search+Indexing}here}} )
+  If you are upgrading from versions \< 3.0, you need to rebuild the JIRA index (see {{{http://confluence.atlassian.com/display/JIRA/Search+Indexing}here}} )
 
   
