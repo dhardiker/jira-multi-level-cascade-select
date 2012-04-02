@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sourcesense.jira.plugin</groupId>
     <artifactId>cascadingselect</artifactId>
-    <version>2.7-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <name>Multilevel Cascade Select</name>
     <description>Multilevel Cascade Select custom field, searcher and portlet</description>
     <packaging>atlassian-plugin</packaging>
@@ -33,7 +33,7 @@
         <jira.version>5.0</jira.version>
         <javac.src.version>1.6</javac.src.version>
         <javac.target.version>1.6</javac.target.version>
-        <amps.version>3.8</amps.version>
+        <amps.version>3.9.1</amps.version>
     </properties>
 
     <build>
