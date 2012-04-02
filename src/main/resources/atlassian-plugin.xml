@@ -5,6 +5,9 @@
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     </plugin-info>
 
+    <resource type="i18n" name="i18n"
+        location="i18n" />
+
     <jql-function key="multilevelcascadeOption" name="multilevelcascadeOption"
                   class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadeOptionFunction">
         <!--The name of the function-->
@@ -48,12 +51,12 @@
             <action name="com.sourcesense.jira.customfield.config.EditCustomFieldMultiLevelOptions"
                     alias="EditCustomFieldMultiLevelOptions"
                     roles-required="admin">
-                <view name="input">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
-                <view name="error">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
+                <view name="input">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
+                <view name="error">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
                 <view name="confirmdelete">/secure/admin/views/customfields/deletecustomfieldoption.jsp</view>
 
                 <command name="configureOption" alias="ConfigureCustomFieldOptions">
-                    <view name="error">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
+                    <view name="error">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
                 </command>
             </action>
         </actions>

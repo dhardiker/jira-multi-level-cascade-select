@@ -1,0 +1,171 @@
+<html>
+<head>
+    <title>${i18n.getText("admin.issuefields.customfields.edit.options", $customField.name)}</title>
+    <meta name="decorator" content="atl.admin"/>
+    <script type="text/javascript">
+        <!--
+        AJS.toInit(function ($) {
+            $('.mlcs-parent').delegate("", "change", function () {
+                var optionId = $(this).val(),
+                        fieldConfigId = $('select.mlcs-parent').attr("data-field-config-id");
+                window.location = 'EditCustomFieldMultiLevelOptions!default.jspa?fieldConfigId=' + fieldConfigId + '&selectedParentOptionId=' + optionId;
+                return true;
+            })
+        });
+        //-->
+    </script>
+</head>
+
+<body>
+<h3 class="formtitle">$i18n.getText("admin.issuefields.customfields.edit.options", $customField.name)</h3>
+
+<p>
+    #if ($selectedParentOption)
+        $i18n.getText("admin.issuefields.customfields.reorder.parent", "<strong>${fieldConfig.name}</strong>", "<strong>$customField.name</strong>", "<strong>$selectedParentOption.value</strong>")
+    #else
+        $i18n.getText("admin.issuefields.customfields.reorder", "<strong>$fieldConfig.name</strong>", "<strong>$customField.name</strong>")
+    #end
+</p>
+
+<p>$i18n.getText("admin.issuefields.customfields.html.usage")</p>
+<ul class="optionslist">
+    <li>
+        <a title="$i18n.getText("admin.issuefields.customfields.sort.alphabetically")" href="EditCustomFieldMultiLevelOptions!sort.jspa?fieldConfigId=${fieldConfigId}&selectedParentOptionId=$!{selectedParentOptionId}">$i18n.getText("admin.issuefields.customfields.sort.alphabetically")</a>
+    </li>
+    <li>
+        <a title="$i18n.getText("admin.issuefields.customfields.view.custom.field.configuration")" href="ConfigureCustomField!default.jspa?customFieldId=${customField.idAsLong}">$i18n.getText("admin.issuefields.customfields.view.custom.field.configuration")</a>
+    </li>
+</ul>
+    #if ($cascadingSelect)
+    <p>
+        $i18n.getText("admin.issuefields.customfields.choose.parent"):
+        <select name="$customField.id" class="mlcs-parent" data-field-config-id="${fieldConfigId}">
+            <option value="">$i18n.getText("admin.issuefields.customfields.edit.root")</option>
+            #if ($selectedParentOptionId)
+                <option value="$selectedParentOptionId">$i18n.getText("admin.issuefields.customfields.edit.parent.list")</option>
+            #end
+
+            #if ($selectedParentOption.parentOption)
+                #foreach ($option in $selectedParentOption.parentOption.childOptions)
+                    <option value="$option.optionId" #if ("$option.optionId" == "$!selectedParentOptionId")selected#end>
+                        $option.value
+                    </option>
+                #end
+            #end
+            #foreach($option in $options)
+                <option value="$option.optionId" #if ("$option.optionId" == "$!selectedParentOptionId")selected#end>
+                    $option.value
+                </option>
+            #end
+        </select>
+    </p>
+    #end
+
+    #if ($displayOptions && ! $displayOptions.empty)
+    <form class="aui" name="configureOption" action="ConfigureCustomFieldOptions.jspa" method="post">
+        <table class="aui aui-table-rowhover">
+            <thead>
+            <tr>
+                <th width="1%">$i18n.getText("admin.issuefields.customfields.position")</th>
+                <th>$i18n.getText("admin.issuefields.customfields.option")</th>
+                #if ($displayOptions.size() > 1)
+                    <th width="10%">$i18n.getText("admin.issuefields.customfields.order")</th>
+                    <th width="10%" class="nowrap">$i18n.getText("admin.issuefields.customfields.move.to.position")</th>
+                #end
+                <th width="10%">$i18n.getText("common.words.operations")</th>
+            </tr>
+            </thead>
+            <tbody>
+                #set ($counter = 0)
+                #foreach ($option in $displayOptions)
+                    #set ($counter = $counter + 1)
+                <tr>
+                    <td>${counter}.</td>
+                    <td>
+                        <input type="text" class="medium-field" name="newLabel_$option.optionId" size="30" value="$option.value"/>
+                    </td>
+                    #if ($displayOptions.size() > 1)
+                        <td valign=top align=center nowrap>
+                            #if ($counter != 1)
+                                <a id="moveToFirst_${option.optionId}" href="EditCustomFieldMultiLevelOptions!moveToFirst.jspa?fieldConfigId=${fieldConfig.id}&selectedValue=${option.optionId}"><img src="${baseurl}/images/icons/arrow_first.gif" border=0 width=16 height=16 title="$i18n.getText("admin.issuefields.customfields.move.to.first.position")"></a>
+                                <a id="moveUp_${option.optionId}" href="EditCustomFieldMultiLevelOptions!moveUp.jspa?fieldConfigId=${fieldConfig.id}&selectedValue=${option.optionId}"><img src="${baseurl}/images/icons/arrow_up_blue.gif" border=0 width=16 height=16 title="$i18n.getText("admin.issuefields.customfields.move.this.option.up")"></a>
+                            #else<img src="${baseurl}/images/border/spacer.gif" border=0 width=13 height=14><img src="${baseurl}/images/border/spacer.gif" border=0 width=20 height=16>#end
+                            #if ($counter != $displayOptions.size())
+                                <a id="moveDown_${option.optionId}" href="EditCustomFieldMultiLevelOptions!moveDown.jspa?fieldConfigId=${fieldConfig.id}&selectedValue=${option.optionId}"><img src="${baseurl}/images/icons/arrow_down_blue.gif" border=0 width=16 height=16 title="$i18n.getText("admin.issuefields.customfields.move.this.option.down")"></a>
+                                <a id="moveToLast_${option.optionId}" href="EditCustomFieldMultiLevelOptions!moveToLast.jspa?fieldConfigId=${fieldConfig.id}&selectedValue=${option.optionId}"><img src="${baseurl}/images/icons/arrow_last.gif" border=0 width=16 height=16 title="$i18n.getText("admin.issuefields.customfields.move.this.option.to.last")"></a>
+                            #else<img src="${baseurl}/images/border/spacer.gif" border=0 width=13 height=14><img src="${baseurl}/images/border/spacer.gif" border=0 width=20 height=16>#end
+                        </td>
+                        <td>
+                            <input type="text" class="short-field" name="newOptionPosition_$option.optionId" title="$i18n.getText('admin.issuefields.customfields.new.option.position')" size="2">
+                        </td>
+                    #end
+                    <td>
+                        <ul class="operations-list">
+                            #if ($cascadingSelect)
+                                <li>
+                                    <a title="$i18n.getText("admin.issuefields.customfields.edit.children.options", $option.value)" href="${selectedParentOptionUrlPreifx}${option.optionId}">$i18n.getText("common.words.configure")</a>
+                                </li>
+                            #end
+                            #if (! ${action.isDefaultValue( $option.optionId.toString() )})
+                                <li><a id="del_${option.value}" href="EditCustomFieldMultiLevelOptions!remove.jspa?fieldConfigId=${fieldConfig.id}&selectedValue=${option.optionId}">$i18n.getText("common.words.delete")</a>
+                                </li>
+                            #else&nbsp;#end
+                        </ul>
+                    </td>
+                </tr>
+                #end
+            <tr class="rowHeader" align="center">
+                <td>&nbsp;
+                    <input type="hidden" name="fieldConfigId" value="${fieldConfigId}">
+                    <input type="hidden" name="selectedParentOptionId" value="$!{selectedParentOptionId}">
+                </td>
+                <td>
+                    <input class="aui-button" type="submit" name="saveLabel" value="$i18n.getText("common.words.update")">
+                </td>
+                <td>&nbsp;</td>
+                #if ($displayOptions.size() > 1)
+                    <td>
+                        <input class="aui-button" type="submit" name="moveOptionsToPosition" value="$i18n.getText("common.forms.move")">
+                    </td>
+                #end
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    #else
+    <div class="aui-message info">
+        <p>$i18n.getText("admin.issuefields.customfields.currently.no.options")</p>
+    </div>
+    #end
+
+
+<form class="aui" action="EditCustomFieldMultiLevelOptions!add.jspa" method="post" name="jiraform"
+      onsubmit="if (this.submitted) return false; this.submitted = true; return true">
+    <fieldset>
+        <input type="hidden" id="fieldConfigId" name="fieldConfigId" value="$fieldConfigId">
+        <input type="hidden" id="selectedParentOptionId" name="selectedParentOptionId" value="$!selectedParentOptionId">
+        <input type="hidden" id="addSelectValue" name="addSelectValue" value="true">
+        <input type="hidden" id="atl_token" name="atl_token" value="$xsrfToken">
+    </fieldset>
+
+    <h2>$i18n.getText("admin.issuefields.customfields.add.new.option")</h2>
+
+    <div class="field-group">
+        <fieldset class="group">
+            <label for="addValue">$i18n.getText("admin.issuefields.customfields.add.value")</label>
+            <input type="text" class="medium-field" name="addValue" id="addValue">
+        </fieldset>
+    </div>
+
+    <div class="buttons-container">
+        <div class="buttons">
+            <input type="submit" name="$i18n.getText("common.forms.add")" value="$i18n.getText("common.forms.add")" id="add_submit" accesskey="s" title="$i18n.getText("common.forms.submit.tooltip")" class="aui-button ">
+            <a href="ConfigureCustomField!default.jspa?customFieldId=${customField.idAsLong}">$i18n.getText("common.words.done")</a>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>
