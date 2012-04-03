@@ -1,17 +1,10 @@
-#if ($value)
-    #set($prefix = "")
-    #foreach ($id in [0..10])
-        #if($id > 0)
-            #set($key = $id.toString())
+#if ($value && !$value.isEmpty())
+    #set($prefix = " - ")
+    $value.get(null)
+    #foreach ($id in [1..$value.size()])
+        #if ($value.get($id.toString()))
+            ${prefix}$value.get($id.toString())
         #end
-
-        #if ($value.getValuesForKey($key) && $value.getValuesForKey($key).isEmpty() == false)
-            #set ($singlevalue = $value.getValuesForKey($key).iterator().next())
-            #if ($singlevalue)
-                ${prefix}$singlevalue.value
-            #end
-        #end
-        #set($prefix = " - ")
     #end
 #end
 

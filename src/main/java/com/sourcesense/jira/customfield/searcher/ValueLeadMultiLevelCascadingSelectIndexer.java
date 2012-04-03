@@ -1,20 +1,21 @@
 package com.sourcesense.jira.customfield.searcher;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.customfields.converters.SelectConverter;
-import com.atlassian.jira.issue.customfields.impl.CascadingSelectCFType;
 import com.atlassian.jira.issue.customfields.option.Option;
-import com.atlassian.jira.issue.customfields.view.CustomFieldParams;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.index.indexers.impl.AbstractCustomFieldIndexer;
-import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.util.NonInjectableComponent;
 import com.atlassian.jira.web.FieldVisibilityManager;
-import com.sourcesense.jira.customfield.type.MultiLevelCascadingSelectCFType;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Maps;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.atlassian.jira.util.dbc.Assertions.notNull;
 
@@ -32,22 +33,21 @@ import static com.atlassian.jira.util.dbc.Assertions.notNull;
  */
 @NonInjectableComponent
 public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFieldIndexer {
-    public static final String CHILD_INDEX_SUFFIX = ":" + CascadingSelectCFType.CHILD_KEY;
 
+    private final Log log = LogFactory.getLog(ValueLeadMultiLevelCascadingSelectIndexer.class);
 
-    private final CustomField customField;
+    public static final String RAW_VALUE_SUFFIX = "_raw";
 
     // /CLOVER:OFF
 
-    public ValueLeadMultiLevelCascadingSelectIndexer(final FieldVisibilityManager fieldVisibilityManager, final CustomField customField, JqlSelectOptionsUtil jqlSelectOptionsUtil, SelectConverter selectConverter) {
+    public ValueLeadMultiLevelCascadingSelectIndexer(final FieldVisibilityManager fieldVisibilityManager, final CustomField customField) {
         super(fieldVisibilityManager, notNull("customField", customField));
-        this.customField = customField;
 
     }
 
     @Override
     public void addDocumentFieldsSearchable(final Document doc, final Issue issue) {
-        addDocumentFields(doc, issue, Field.Index.NOT_ANALYZED);
+        addDocumentFields(doc, issue, Field.Index.NOT_ANALYZED_NO_NORMS);
     }
 
     @Override
@@ -64,11 +64,18 @@ public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFie
      */
     private void addDocumentFields(final Document doc, final Issue issue, final Field.Index indexType) {
         final Object value = customField.getValue(issue);
-        if (value instanceof CustomFieldParams) {
-            final CustomFieldParams customFieldParams = (CustomFieldParams) value;
-            this.indexAllLevels(customFieldParams, doc, indexType);
-            indexParentField(customFieldParams, doc, indexType);
+        if (value instanceof Map) {
+            final Map<String,Option> customFieldParams = (Map<String, Option>) value;
+            indexAllLevels(customFieldParams, doc, indexType);
+            doc.add(new Field(getDocumentFieldId() + ":" + RAW_VALUE_SUFFIX, stringRep(customFieldParams), Field.Store.YES, indexType));
         }
+
+    }
+
+    private String stringRep(Map<String, Option> customFieldParams) {
+        final TreeMap<String, Option> orderedKeys = new TreeMap<String, Option>(Maps.filterKeys(customFieldParams, Predicates.notNull()));
+        orderedKeys.put("0", customFieldParams.get(null));
+        return Joiner.on("-").join(orderedKeys.values());
     }
 
     /**
@@ -79,53 +86,19 @@ public class ValueLeadMultiLevelCascadingSelectIndexer extends AbstractCustomFie
      * @param doc
      * @param indexType
      */
-    private void indexAllLevels(final CustomFieldParams customFieldParams, final Document doc, final Field.Index indexType) {
-        final Collection values = customFieldParams.getAllValues();
-        if ((values != null) && !values.isEmpty()) {
-            for (String level : customFieldParams.getAllKeys()) {
-                Option currentOption;
-                if (level != null) {
-                    currentOption = getOpt(customFieldParams.getValuesForKey(level));
-                    if (currentOption != null) {
-                        String indexFieldName = getDocumentFieldId();
-                        if (level != null)
-                            indexFieldName += ":" + level;
-                        System.out.println("Indexing :" + currentOption + "With ID=" + indexFieldName);
-                        addField(doc, indexFieldName, currentOption.getValue(), indexType);
-                    }
-                }
+    private void indexAllLevels(final Map<String, Option> customFieldParams, final Document doc, final Field.Index indexType) {
+        for (String level : customFieldParams.keySet()) {
+            final Option currentOption = customFieldParams.get(level);
+            if (currentOption != null) {
+                final String indexFieldName = getDocumentFieldId() + (level == null ? "" : ":" + level);
+                log.debug("Indexing :" + currentOption + "With ID=" + indexFieldName);
+                addField(doc, indexFieldName, currentOption.getOptionId().toString(), indexType);
             }
         }
     }
 
-
-    /**
-     * indexes the Parent Option value in the Lucene Doc.
-     *
-     * @param customFieldParams
-     * @param doc
-     * @param indexType
-     */
-    private void indexParentField(final CustomFieldParams customFieldParams, final Document doc, final Field.Index indexType) {
-        final Collection values = customFieldParams.getValuesForKey(MultiLevelCascadingSelectCFType.PARENT_KEY);
-        if ((values != null) && !values.isEmpty()) {
-            final Option selectedValue = (Option) values.iterator().next();
-            addField(doc, getDocumentFieldId(), selectedValue.getValue().toString(), indexType);
-        }
-    }
-
-
     private void addField(final Document doc, final String indexFieldName, final String value, final Field.Index indexType) {
         doc.add(new Field(indexFieldName, value, Field.Store.YES, indexType));
-    }
-
-
-    private Option getOpt(final Collection values) throws NumberFormatException {
-        if (values == null || values.isEmpty()) {
-            return null;
-        }
-        Option current = (Option) values.iterator().next();
-        return current;
     }
 
     // /CLOVER:ON

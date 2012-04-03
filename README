@@ -8,5 +8,16 @@ ${project.description} for JIRA ${jira.version}
 == Sys admins ==
 
   You maybe received the `${project.artifactId}-${project.version}-${config}.zip` package,
-  please copy all the files under `WEB-INF` directory to `${ATLASSIAN_HOME}/WEB_INF/`.
-  Simply extract the plug-in in the Jira Directory and the new Multi Level Cascading Select Custom Field will be added.
+  install the '${project.artifactId}-${project.version}.jar' file into JIRA using the Plugin Manager
+  or place it in JIRA_HOME/plugins/installed-plugins and restart JIRA. Restarting JIRA is not necessary
+  when installing the plugin using the Plugin Manager.
+
+  No as of version 3.0 no other files are needed for installation as were required for previous versions.
+
+
+== Developers ==
+
+  To modify this plugin use the Atlassian Plugin SDK https://developer.atlassian.com/display/DOCS/Developer+Quick+Start
+  * 'atlas-run' or 'mvn jira:run' will launch a pre-configured jira instance with the database from 'database/'.
+  * 'atlas-cli' or 'mvn jira:cli' will launch a cli to install changes
+  * 'atlas-package' or 'mvn package' will build the plugin

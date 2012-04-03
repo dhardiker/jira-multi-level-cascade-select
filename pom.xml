@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sourcesense.jira.plugin</groupId>
     <artifactId>cascadingselect</artifactId>
-    <version>2.7-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <name>Multilevel Cascade Select</name>
     <description>Multilevel Cascade Select custom field, searcher and portlet</description>
-    <packaging>jar</packaging>
+    <packaging>atlassian-plugin</packaging>
 
     <distributionManagement>
         <repository>
@@ -31,10 +31,9 @@
 
     <properties>
         <jira.version>5.0</jira.version>
-        <jira.data.version>5.0</jira.data.version>
         <javac.src.version>1.6</javac.src.version>
         <javac.target.version>1.6</javac.target.version>
-        <amps.version>3.8</amps.version>
+        <amps.version>3.9.1</amps.version>
     </properties>
 
     <build>
@@ -46,7 +45,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <productVersion>${jira.version}</productVersion>
-                    <productDataVersion>${jira.data.version}</productDataVersion>
+                    <productDataPath>${basedir}/src/test/resources/generated-test-resources.zip</productDataPath>
                 </configuration>
             </plugin>
 
@@ -82,112 +81,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-
-        <profile>
-            <id>webtest</id>
-
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exploded</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <primaryArtifact>false</primaryArtifact>
-                            <dependentWarExcludes>**/commons-configuration-1.0.jar</dependentWarExcludes>
-                            <webappDirectory>${project.build.directory}/jira4</webappDirectory>
-                            <archive>
-                                <addMavenDescriptor>false</addMavenDescriptor>
-                            </archive>
-                        </configuration>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>maven-jetty-plugin</artifactId>
-                        <version>6.1.11</version>
-                        <configuration>
-                            <contextPath>/jira4</contextPath>
-                            <webApp>${project.build.directory}/jira4</webApp>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.atomikos</groupId>
-                                <artifactId>transactions-jta</artifactId>
-                                <version>3.2.3</version>
-                            </dependency>
-
-                            <dependency>
-                                <groupId>commons-dbcp</groupId>
-                                <artifactId>commons-dbcp</artifactId>
-                                <version>1.2.2</version>
-                            </dependency>
-
-                            <dependency>
-                                <groupId>org.hsqldb</groupId>
-                                <artifactId>hsqldb</artifactId>
-                                <version>1.8.0.10</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-
-                <resources>
-                    <resource>
-                        <directory>src/test/resources</directory>
-                        <filtering>true</filtering>
-                    </resource>
-                </resources>
-            </build>
-
-            <dependencies>
-                <dependency>
-                    <groupId>commons-configuration</groupId>
-                    <artifactId>commons-configuration</artifactId>
-                    <version>1.5</version>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>commons-logging</artifactId>
-                            <groupId>commons-logging</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>commons-lang</artifactId>
-                            <groupId>commons-lang</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>commons-digester</artifactId>
-                            <groupId>commons-digester</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>commons-beanutils</groupId>
-                            <artifactId>commons-beanutils-core</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.atlassian.jira</groupId>
-                    <artifactId>atlassian-jira-webapp</artifactId>
-                    <version>${jira.version}</version>
-                    <type>war</type>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
     <dependencies>
         <!--

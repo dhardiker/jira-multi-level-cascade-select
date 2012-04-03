@@ -15,8 +15,6 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.jql.util.JqlCustomFieldId;
 import com.atlassian.query.operator.Operator;
-import com.sourcesense.jira.customfield.MultiLevelCascadingSelectComparator;
-import com.sourcesense.jira.customfield.MultiLevelCascadingSelectValue;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -30,11 +28,7 @@ import java.util.*;
 public class MultiLevelCascadingSelectStatisticsMapper extends AbstractCustomFieldStatisticsMapper {
     private OptionsManager optionsManager;
 
-    public static String EMPTY_VALUE = "_none_";
-
     public static String EMPTY_VALUE_ID = "-2";
-
-    public static long EMPTY_VALUE_ID_LONG = -2;
 
     private static final Logger log = Logger.getLogger(MultiLevelCascadingSelectStatisticsMapper.class);
 
@@ -45,21 +39,16 @@ public class MultiLevelCascadingSelectStatisticsMapper extends AbstractCustomFie
 
     @Override
     protected String getSearchValue(Object object) {
-        return ((MultiLevelCascadingSelectValue) object).getSearchValue();
+        return object instanceof String ? (String)object : null;
     }
 
     @Override
     public String getDocumentConstant() {
-        return customField.getId() + ":0";
+        return customField.getId() + ":all";
     }
 
     public Object getValueFromLuceneField(String string) {
-        return new MultiLevelCascadingSelectValue(optionsManager, string);
-    }
-
-    @Override
-    public Comparator getComparator() {
-        return new MultiLevelCascadingSelectComparator();
+        return string;
     }
 
     @Override
@@ -68,7 +57,7 @@ public class MultiLevelCascadingSelectStatisticsMapper extends AbstractCustomFie
             return null;
         } else {
             if (value != null) {
-                log.debug("VALUE:" + ((MultiLevelCascadingSelectValue) value).getSearchValue());
+                log.debug("VALUE:" + value);
                 final SearchService searchService = ComponentManager.getComponentInstanceOfType(SearchService.class);
                 final User user = ComponentManager.getInstance().getJiraAuthenticationContext().getUser();
                 SearchContext searchRequestContext = searchService.getSearchContext(user, searchRequest.getQuery());
