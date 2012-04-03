@@ -1,9 +1,12 @@
-<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}">
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
     </plugin-info>
+
+    <resource type="i18n" name="i18n"
+        location="i18n" />
 
     <jql-function key="multilevelcascadeOption" name="multilevelcascadeOption"
                   class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadeOptionFunction">
@@ -13,6 +16,10 @@
         <list>true</list>
     </jql-function>
 
+    <web-resource name="Resources" key="customfield-resources">
+        <context>atl.general</context>
+        <resource name="multi-level-cascade-select.js" type="download" location="js/multi-level-cascade-select.js"></resource>
+    </web-resource>
 
     <customfield-type key="multi-level-cascading-select" name="Multi level Cascading Select"
                       class="com.sourcesense.jira.customfield.type.MultiLevelCascadingSelectCFType">
@@ -29,7 +36,7 @@
     <customfield-searcher key="multi-level-cascading-select-searcher" name="Multi level Cascading Select Searcher"
                           class="com.sourcesense.jira.customfield.searcher.MultiLevelCascadingSelectSearcher4">
         <resource type="velocity" name="view"
-                  location="templates/plugins/customfield/searcher/multi-level-cascading-select-view.vm"/>
+                  location="templates/plugins/fields/view-searcher/view-searcher-multioption.vm"/>
         <resource type="velocity" name="search"
                   location="templates/plugins/customfield/searcher/multi-level-cascading-select-search.vm"/>
         <resource type="velocity" name="label"
@@ -44,12 +51,12 @@
             <action name="com.sourcesense.jira.customfield.config.EditCustomFieldMultiLevelOptions"
                     alias="EditCustomFieldMultiLevelOptions"
                     roles-required="admin">
-                <view name="input">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
-                <view name="error">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
+                <view name="input">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
+                <view name="error">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
                 <view name="confirmdelete">/secure/admin/views/customfields/deletecustomfieldoption.jsp</view>
 
                 <command name="configureOption" alias="ConfigureCustomFieldOptions">
-                    <view name="error">/secure/admin/views/customfields/editcustomfieldmultileveloptions.jsp</view>
+                    <view name="error">/templates/plugins/customfield/admin/editcustomfieldmultileveloptions.vm</view>
                 </command>
             </action>
         </actions>

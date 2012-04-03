@@ -1,6 +1,5 @@
 package com.sourcesense.jira.customfield.searcher;
 
-import com.atlassian.jira.ManagerFactory;
 import com.atlassian.jira.issue.customfields.manager.OptionsManager;
 import com.atlassian.jira.issue.customfields.option.Option;
 import com.atlassian.jira.issue.fields.CustomField;
@@ -15,11 +14,18 @@ import com.atlassian.jira.jql.util.JqlSelectOptionsUtil;
 import com.atlassian.jira.util.NonInjectableComponent;
 import com.atlassian.query.clause.TerminalClause;
 import com.atlassian.query.operator.Operator;
+import com.google.common.base.Function;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.sourcesense.jira.customfield.type.MultiLevelCascadingSelectCFType;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.atlassian.jira.util.dbc.Assertions.notBlank;
@@ -59,14 +65,14 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
     public static long EMPTY_VALUE_ID_LONG = -2;
 
     public MultiLevelCascadingSelectingQueryFactory(final CustomField customField, final String luceneField, final JqlSelectOptionsUtil jqlSelectOptionsUtil,
-                                                    final JqlOperandResolver jqlOperandResolver, final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil) {
+                                                    final JqlOperandResolver jqlOperandResolver, final JqlCascadingSelectLiteralUtil jqlCascadingSelectLiteralUtil, final OptionsManager optionsManager) {
         this.customField = notNull("customField", customField);
         this.jqlSelectOptionsUtil = notNull("jqlSelectOptionsUtil", jqlSelectOptionsUtil);
         this.jqlOperandResolver = notNull("jqlOperandResolver", jqlOperandResolver);
         this.jqlCascadingSelectLiteralUtil = notNull("jqlCascadingSelectLiteralUtil", jqlCascadingSelectLiteralUtil);
         this.parentFieldName = notBlank("luceneField", luceneField);
-        this.childFieldName = notBlank("luceneField", luceneField) + ":";
-        this.optionsManager = ManagerFactory.getOptionsManager();
+        this.childFieldName = notBlank("luceneField", luceneField);
+        this.optionsManager = notNull("optionsManager", optionsManager);
     }
 
     /**
@@ -142,10 +148,9 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
     // /CLOVER:ON
 
     BooleanQuery getQueryFromLiterals(final boolean negationOperator, final List<QueryLiteral> literals) {
-        final List<Long> parentIds = new ArrayList<Long>();
-        final List<Long> childIds = new ArrayList<Long>();
-        boolean emptyLiteralFound = processParentChildOptionLiterals(literals, parentIds, childIds);
-        boolean nonEmptyLiteralsFound = !parentIds.isEmpty() || !childIds.isEmpty();
+        final Multimap<Integer, Option> items = HashMultimap.create();
+        boolean emptyLiteralFound = processParentChildOptionLiterals(literals, items);
+        boolean nonEmptyLiteralsFound = !items.isEmpty();
         boolean anyLiteralsFound = emptyLiteralFound || nonEmptyLiteralsFound;
 
         // if we didn't actually find anything, return now with null
@@ -155,22 +160,19 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
 
         // we will handle all negation manually instead of deferring using the QueryFactoryResult
         // this is because the result can be complicated by the addition of the NonEmptyQuery
-        BooleanClause.Occur occur = negationOperator ? BooleanClause.Occur.MUST_NOT : BooleanClause.Occur.SHOULD;
         BooleanQuery combined = new BooleanQuery();
-        for (Long parentId : parentIds) {
-            if (childIds.size() == 0)
-                combined.add(createParentTerm(parentId), occur);
-        }
-        int count = 1;
-        for (Long childId : childIds) {
-            if (count == childIds.size())
-                if (childId == EMPTY_VALUE_ID_LONG) {
+        for (Integer level : items.keySet()) {
+            final Collection<Option> options = items.get(level);
+            BooleanClause.Occur occur = negationOperator ? BooleanClause.Occur.MUST_NOT : options.size() == 1 ? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD;
+            for (Option option : options) {
+                if (option.getOptionId() == EMPTY_VALUE_ID_LONG) {
                     combined.add(exactValuePhraseQuery(createStringValueFromLiterals(literals), 0), occur);
-                } else
-                    combined.add(createChildTerm(childId, count), occur);
-            else
-                count++;
+                } else {
+                    combined.add(createChildTerm(option.getOptionId(), level), occur);
+                }
+            }
         }
+
 
         // if we are negating then also exclude EMPTY by default, but only if we actually resolved some
         // options
@@ -219,27 +221,26 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
      * Accumulates parent and child option ids represented by the specified literals.
      *
      * @param literals  the literals
-     * @param parentIds the collection of parent ids to add to
-     * @param childIds  the collection of child ids to add to
+     * @param options  the options with the correct position
      * @return whether or not an empty literal was seen
      */
-    boolean processParentChildOptionLiterals(final List<QueryLiteral> literals, final List<Long> parentIds, final List<Long> childIds) {
+    boolean processParentChildOptionLiterals(final List<QueryLiteral> literals, final Multimap<Integer, Option> options) {
         boolean emptyLiteralFound = false;
         if (literals != null && !literals.isEmpty()) {
             for (QueryLiteral literal : literals) {
                 if (literal.asString() != null && literal.asString().contains(":")) {
-                    this.splitMultiLiteral(literal, parentIds, childIds);
+                    this.splitMultiLiteral(literal, options);
                 } else {
                     final List<Option> optionList = jqlSelectOptionsUtil.getOptions(customField, literal, true);
                     for (Option option : optionList) {
                         if (option != null) {
                             if (option.getParentOption() == null && !(option.getValue().equals(EMPTY_VALUE))) {
-                                parentIds.add(option.getOptionId());
+                                options.put(null, option);
                             } else if (option.getValue().equals(EMPTY_VALUE)) {
-                                childIds.add(EMPTY_VALUE_ID_LONG);
+                                options.put(MultiLevelCascadingSelectCFType.findDepth(option),option);
                                 this.optionsManager.deleteOptionAndChildren(option);
                             } else {
-                                childIds.add(option.getOptionId());
+                                options.put(MultiLevelCascadingSelectCFType.findDepth(option),option);
                             }
                         } else {
                             // caller needs to know if an empty literal was seen
@@ -277,30 +278,24 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
         return resultString.substring(0, resultString.length() - 3);
     }
 
-    private void splitMultiLiteral(QueryLiteral literal, List<Long> parentIds, List<Long> childIds) {
+    private void splitMultiLiteral(QueryLiteral literal, Multimap<Integer, Option> options) {
         String[] splittedOptions = literal.asString().split(":");
         for (int i = 0; i < splittedOptions.length; i++) {
-            if (i == 0)
-                parentIds.add(new Long(splittedOptions[i]));
-            else
-                childIds.add(new Long(splittedOptions[i]));
+            final Option option = optionsManager.findByOptionId(new Long(splittedOptions[i]));
+            options.put(i == 0 ? null : i, option);
         }
 
     }
 
-    private Query createParentTerm(final Long parentId) {
-        return new TermQuery(new Term(parentFieldName, parentId.toString()));
-    }
-
-    private Query createChildTerm(final Long childId, int level) {
-        return new TermQuery(new Term(childFieldName + level, childId.toString()));
+    private Query createChildTerm(final Long childId, Integer level) {
+        String fieldSuffix = level == null ? "" : (":" + level);
+        return new TermQuery(new Term(childFieldName + fieldSuffix, childId.toString()));
     }
 
     private BooleanQuery createNonEmptyQuery() {
         // for this field to be NonEmpty, either the parent or the child should be specified
         final BooleanQuery query = new BooleanQuery();
         query.add(TermQueryFactory.nonEmptyQuery(parentFieldName), BooleanClause.Occur.SHOULD);
-        query.add(TermQueryFactory.nonEmptyQuery(childFieldName), BooleanClause.Occur.SHOULD);
         return query;
     }
 
@@ -311,7 +306,6 @@ public class MultiLevelCascadingSelectingQueryFactory implements ClauseQueryFact
 
         final BooleanQuery query = new BooleanQuery();
         query.add(parentQuery, BooleanClause.Occur.MUST);
-        query.add(TermQueryFactory.nonEmptyQuery(childFieldName), BooleanClause.Occur.MUST_NOT);
         return query;
     }
 

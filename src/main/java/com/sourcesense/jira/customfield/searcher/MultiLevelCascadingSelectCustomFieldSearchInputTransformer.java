@@ -130,7 +130,7 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
                         levelNumber = Integer.parseInt(level);
                     else
                         levelNumber = 0;
-                    orderedFunctionArgs.put(levelNumber, EMPTY_VALUE_ID);
+                    orderedFunctionArgs.put(levelNumber, EMPTY_VALUE);
                 } else {
                     invalidLongOperand = longOptionValue;
                 }
@@ -196,21 +196,28 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
             List<Option> options = new ArrayList<Option>();
             for (QueryLiteral l : literals)
                 options.addAll(jqlSelectOptionsUtil.getOptions(customField, l, true));
-            // options.addAll(jqlSelectOptionsUtil.getOptions(customField, queryContext, l, true));
+
             CustomFieldParams customFieldParams = new CustomFieldParamsImpl(customField);
             if (options.size() == 0) {
                 customFieldParams.put(MultiLevelCascadingSelectCFType.PARENT_KEY, Collections.singleton(literal.asString()));
             } else {
-                int counter = options.size() - 1;
                 for (Option opt : options) {
-                    if (counter > 0) {
-                        String key = "" + counter;
-                        customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                    final String key;
+                    if (opt.getParentOption() == null) {
+                        key = null;
                     } else {
-                        String key = null;
-                        customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                        int depth = MultiLevelCascadingSelectCFType.findDepth(opt);
+                        key = Integer.toString(depth);
                     }
-                    counter--;
+                    customFieldParams.put(key, Collections.singleton(opt.getOptionId().toString()));
+                }
+            }
+            if (clause.getOperand() instanceof FunctionOperand) {
+                FunctionOperand operand = (FunctionOperand) clause.getOperand();
+                for (String arg : operand.getArgs()) {
+                    if (EMPTY_VALUE.equals(arg)) {
+                        customFieldParams.put(Integer.toString(operand.getArgs().indexOf(arg)), Collections.singleton(EMPTY_VALUE_ID));
+                    }
                 }
             }
             // secondo me sono al contrario????
@@ -220,7 +227,7 @@ public class MultiLevelCascadingSelectCustomFieldSearchInputTransformer extends 
         return null;
     }
 
-    /**
+    /*
      * this method came from the simple cascading select, probably doesn't need any change for
      * multilevel
      */

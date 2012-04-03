@@ -17,7 +17,17 @@ DOWNLOADS
 COMMERCIAL SUPPORT
 
 If you are looking for commercial support for this plugin {{{mailto://info@sourcesense.com?subject=Multicascade}contact us}}, we will be happy to oblige!
-  
+
+* 3.0-SNAPSHOT
+  This version is compatible with JIRA \> 5.0
+*----------*--------------*----------------:
+| | DATE | DOWNLOAD |
+*----------*--------------*----------------:
+| Multi Level Cascade Select 3.0-SNAPSHOT (tar.gz) | 2/04/2012     | {{{./bin/3.0-SNAPSHOT/cascadingselect-3.0-SNAPSHOT-bundle.tar.gz}cascadingselect-3.0-SNAPSHOT-bundle.tar.gz}} |
+*----------*--------------*----------------:
+| Multi Level Cascade Select 3.0-SNAPSHOT (zip) | 2/04/2012     | {{{./bin/3.0-SNAPSHOT/cascadingselect-3.0-SNAPSHOT-bundle.zip}cascadingselect-3.0-SNAPSHOT-bundle.zip}} |
+*----------*--------------*----------------:
+
 * 2.5-SNAPSHOT
   This version is compatible with JIRA \> 4.3
 
@@ -60,9 +70,3 @@ If you are looking for commercial support for this plugin {{{mailto://info@sourc
 | Multi Level Cascade Select 2.2 (zip) | 09/02/2011     | {{{./bin/2.2-SNAPSHOT/cascadingselect-2.2-SNAPSHOT-bundle.zip}cascadingselect-2.2-SNAPSHOT-bundle.zip}} |
 *----------*--------------*----------------:
  
-
-Installation
-
-  After the download of the `cascadingselect-v.x-bundle.zip` package,
-  please copy all the files under `WEB-INF` directory to `${ATLASSIAN_HOME}/WEB_INF/`.
-  Simply extract the plug-in in the Jira Directory and the new Multi Level Cascading Select Custom Field will be added.
